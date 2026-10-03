@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ドイツ語練習問題3000題 演習ドリル</title>
+<style>
+  :root{
+    --bg:#0e0e0e; --bg2:#171717; --bg3:#222222; --line:#363636;
+    --fg:#f0ece2; --fg2:#aaa599; --fg3:#77736b;
+    --ac:#d4a91c; --ac2:#ffce00;
+    --ok:#ffce00; --ng:#e5493f; --info:#e59a3a;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  body::before{content:"";position:fixed;top:0;left:0;right:0;height:6px;z-index:50;
+    background:linear-gradient(#000 0 2px,#dd0000 2px 4px,#ffce00 4px 6px);pointer-events:none}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--fg);
+    font-family:"Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif;
+    font-size:14px; line-height:1.65; padding:26px 16px 80px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px;letter-spacing:.04em;color:var(--ac2);font-weight:600}
+  .sub{color:var(--fg3);font-size:12px;margin:0 0 20px}
+  .sub code{background:var(--bg3);padding:1px 5px;border-radius:4px;font-family:var(--mono);color:var(--fg2)}
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+  .card>h2{
+    font-size:13px;margin:0 0 12px;color:var(--ac);letter-spacing:.08em;font-weight:600;
+    display:flex;align-items:center;gap:8px;
+  }
+  .card>h2::before{content:"";width:3px;height:13px;background:var(--ac);border-radius:2px;display:inline-block}
+  .hidden{display:none !important}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+  .row>.lbl{font-size:12px;color:var(--fg3);min-width:74px}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--line);
+    color:var(--fg2);border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer;user-select:none;
+  }
+  .chip:hover{border-color:var(--fg3)}
+  .chip.on{background:rgba(255,206,0,.14);border-color:var(--ac);color:var(--ac2)}
+  button{font-family:inherit;font-size:13px;cursor:pointer}
+  .btn{
+    background:var(--bg3);border:1px solid var(--line);color:var(--fg);
+    border-radius:7px;padding:8px 16px;transition:border-color .12s;
+  }
+  .btn:hover{border-color:var(--fg3)}
+  .btn.primary{background:var(--ac);border-color:var(--ac);color:#1a1509;font-weight:600}
+  .btn.primary:hover{background:var(--ac2)}
+  .btn.ok{border-color:var(--ok);color:var(--ok)}
+  .btn.ng{border-color:var(--ng);color:var(--ng)}
+  .btn:disabled{opacity:.4;cursor:default}
+  .btn.sm{padding:5px 10px;font-size:12px}
+  .note{font-size:12px;color:var(--fg3);margin:8px 0 0}
+  .qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:11px;color:var(--fg3);margin-bottom:10px}
+  .qhead .tag{background:var(--bg3);border-radius:4px;padding:2px 8px;color:var(--fg2);letter-spacing:.06em}
+  .bar{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:16px}
+  .bar>i{display:block;height:100%;background:var(--ac);width:0;transition:width .2s}
+  .qtext{font-size:19px;line-height:1.5;margin:0 0 4px;word-break:break-word}
+  .qtext .blank{color:var(--ac2);font-family:var(--mono)}
+  .qsub{font-size:12px;color:var(--fg3);margin:0 0 14px}
+  .qsub b{color:var(--fg2)}
+  .keys{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+  .keys button{
+    background:var(--bg3);border:1px solid var(--line);color:var(--fg2);border-radius:6px;
+    width:34px;height:30px;font-size:14px;
+  }
+  .keys button:hover{border-color:var(--ac);color:var(--ac2)}
+  #ans{
+    width:100%;background:var(--bg);border:1px solid var(--line);color:var(--fg);
+    border-radius:8px;padding:12px 14px;font-size:17px;font-family:var(--mono);outline:none;
+  }
+  #ans:focus{border-color:var(--ac)}
+  #ans.correct{border-color:var(--ok)}
+  #ans.wrong{border-color:var(--ng)}
+  .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+  .fb{margin-top:14px;border-left:3px solid var(--line);padding:2px 0 2px 12px}
+  .fb .verdict{font-weight:600;font-size:15px}
+  .fb.ok{border-color:var(--ok)} .fb.ok .verdict{color:var(--ok)}
+  .fb.ng{border-color:var(--ng)} .fb.ng .verdict{color:var(--ng)}
+  .fb.self{border-color:var(--info)} .fb.self .verdict{color:var(--info)}
+  .fb .model{font-family:var(--mono);font-size:15px;color:var(--fg);margin-top:6px;word-break:break-word;line-height:1.5}
+  .fb .alt{font-size:12px;color:var(--fg2);margin-top:4px}
+  .fb .expl{font-size:12.5px;color:var(--fg2);margin-top:8px;line-height:1.7}
+  .fb .expl b{color:var(--ac2);font-weight:600}
+  .stats{display:flex;gap:18px;font-size:12px;color:var(--fg3);font-family:var(--mono)}
+  .stats b{color:var(--fg);font-weight:600}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;margin-top:6px}
+  th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+  th{color:var(--fg3);font-weight:500;font-size:11px;letter-spacing:.05em}
+  td.de{font-family:var(--mono)}
+  .big{font-size:30px;font-family:var(--mono);color:var(--ac2)}
+  select{
+    background:var(--bg3);border:1px solid var(--line);color:var(--fg2);border-radius:7px;
+    padding:5px 8px;font-size:12px;font-family:inherit;max-width:100%;
+  }
+  .spk{margin-left:8px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>ドイツ語練習問題3000題 演習ドリル</h1>
+<p class="sub">
+  『改訂新版 ドイツ語練習問題3000題』の問題を自由入力で解く。
+  <code>a:</code>→ä <code>o:</code>→ö <code>u:</code>→ü と打てる。<code>ss</code> と <code>ß</code> は同じ扱い(厳密採点を除く)。
+</p>
+
+<!-- ============ 設定 ============ -->
+<div id="setup" class="card">
+  <h2>出題範囲</h2>
+  <div class="row"><span class="lbl">章</span><span id="chChips"></span></div>
+  <div class="row"><span class="lbl">種類</span><span id="secChips"></span></div>
+  <div class="row"><span class="lbl">出題順</span>
+    <span class="chip on" id="shuffle">ランダム</span>
+    <span class="chip" id="onlyWrong">前回まちがえた問題だけ</span>
+    <span class="chip" id="strict">厳密採点(大小文字・ß を区別)</span>
+  </div>
+  <div class="row"><span class="lbl">音声</span>
+    <span class="chip on" id="autoSpeak">自動再生</span>
+    <select id="voiceSel" title="ドイツ語の音声"></select>
+    <select id="rateSel" title="速さ">
+      <option value="0.7">ゆっくり</option><option value="0.9">ふつう</option><option value="1.1">はやい</option>
+    </select>
+    <button class="btn sm" id="voiceTest">試し聞き</button>
+  </div>
+  <p class="note" id="voiceNote"></p>
+  <div class="acts">
+    <button class="btn primary" id="start">はじめる</button>
+    <span id="cnt" class="note"></span>
+  </div>
+  <p class="note">
+    和訳・長文は自動採点できないので、模範解答を出して自分で ○ / × を付ける方式にしてある。
+    成績はこのブラウザにだけ残る(外へは出ない)。
+  </p>
+</div>
+
+<!-- ============ 出題 ============ -->
+<div id="quiz" class="card hidden">
+  <div class="qhead">
+    <span><span class="tag" id="qtag"></span> <span id="qpos"></span></span>
+    <span class="stats"><span>正答 <b id="sOk">0</b>/<b id="sAll">0</b></span><span>連続 <b id="sStreak">0</b></span></span>
+  </div>
+  <div class="bar"><i id="barFill"></i></div>
+
+  <p class="qtext" id="qtext"></p>
+  <p class="qsub" id="qsub"></p>
+
+  <div class="keys" id="keys"></div>
+  <input id="ans" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ここに入力して Enter">
+
+  <div class="acts">
+    <button class="btn primary" id="check">採点 (Enter)</button>
+    <button class="btn sm hidden" id="spkQ" title="もう一度聞く (Ctrl+.)">🔊 問題を聞く</button>
+    <button class="btn sm" id="hintBtn">ヒント</button>
+    <button class="btn sm" id="giveup">わからない</button>
+    <button class="btn sm" id="quit" style="margin-left:auto">中断して集計</button>
+  </div>
+
+  <div class="fb hidden" id="fb"></div>
+</div>
+
+<!-- ============ 集計 ============ -->
+<div id="done" class="card hidden">
+  <h2>結果</h2>
+  <p><span class="big" id="rRate"></span> <span class="note" id="rDetail"></span></p>
+  <div id="rWrong"></div>
+  <div class="acts" style="margin-top:14px">
+    <button class="btn primary" id="again">まちがえた問題だけもう一度</button>
+    <button class="btn" id="back">範囲を選び直す</button>
+    <button class="btn sm" id="reset" style="margin-left:auto">保存した成績を消す</button>
+  </div>
+</div>
+
+</div>
+
+<script src="data.js?v=9ff47a1f43"></script>
+<script>
+"use strict";
+
+/* 出題データは同じフォルダの data.js が window.DRILL_DATA に置く(scripts/build_drill.mjs が原本から作る) */
+const DATA = window.DRILL_DATA;
+if(!DATA){ document.body.innerHTML = "<p style='padding:24px'>出題データ data.js がありません。ビルドしてから開いてください。</p>"; throw new Error("data.js がありません"); }
+const CH = DATA.CH, VOCAB = DATA.VOCAB;
+
+/* ============================================================
+   問題プール
+   ============================================================ */
+function buildPool(){
+  var pool = [];
+  Object.keys(CH).forEach(function(ch){
+    CH[ch].items.forEach(function(it,i){
+      pool.push(Object.assign({}, it, {id:"c"+ch+"-"+it.sec+"-"+i, ch:+ch, ref:CH[ch].ref}));
+    });
+  });
+  VOCAB.forEach(function(v,i){
+    pool.push({id:"v"+i+"-de", ch:v.ch, sec:"語彙", q:v.de, sub:"意味は? ("+v.p+")",
+      a:[v.ja], hint:"第"+v.ch+"章の語", expl:"", grade:"self"});
+    if(!v.skip){
+      pool.push({id:"v"+i+"-ja", ch:v.ch, sec:"語彙", q:v.ja, sub:"ドイツ語で? ("+v.p+")",
+        a:[v.de], hint:v.de.charAt(0)+"…", expl:"", grade:"auto"});
+    }
+  });
+  return pool;
+}
+const POOL = buildPool();
+const SECS = ["基礎","発展","応用","変化表","語彙"];
+const CHS  = Object.keys(CH).map(Number);
+
+/* ============================================================
+   保存(このブラウザのみ)
+   ============================================================ */
+const KEY = "de3000-drill-v1";
+const DATAVER = 2;   /* 出題データに章を足したら +1 する。成績 (rec) は消さずに出題範囲だけ広げる */
+var store = {chs:CHS.slice(), secs:SECS.slice(), shuffle:1, onlyWrong:0, strict:0, auto:1, rate:0.9, voice:"", rec:{}, dataver:DATAVER};
+try{
+  var s = JSON.parse(localStorage.getItem(KEY));
+  if(s){
+    store = Object.assign(store, s);
+    /* 前に保存した出題範囲には、あとから足した章が入っていない。
+       データ版が上がったときだけ、新しい章を選択済みに加える(成績はそのまま)。 */
+    if((s.dataver|0) < DATAVER){
+      var have = {}; (store.chs||[]).forEach(function(c){ have[c]=1; });
+      CHS.forEach(function(c){ if(!have[c]) store.chs.push(c); });
+      store.chs.sort(function(a,b){ return a-b; });
+      store.dataver = DATAVER;
+    }
+  }
+}catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+
+/* ============================================================
+   音声(Web Speech API。端末・ブラウザ内蔵の音声を使うので外部依存なし)
+     問題文がドイツ語なら出題時に読む(空欄のある問題は答えが漏れるので読まない)。
+     答えがドイツ語なら採点後に読む。ドイツ語かどうかは「日本語の文字を含まない」で判定する。
+   ============================================================ */
+const TTS = ("speechSynthesis" in window) && (typeof SpeechSynthesisUtterance === "function");
+var deVoices = [];
+function voiceScore(v){
+  var s = 0;
+  if(/Natural|Online|Neural/i.test(v.name)) s += 4;
+  if(/Google/i.test(v.name)) s += 2;
+  if(/^de[-_]DE$/i.test(v.lang)) s += 1;
+  return s;
+}
+function pickVoice(){
+  for(var i=0;i<deVoices.length;i++) if(deVoices[i].name === store.voice) return deVoices[i];
+  return deVoices[0] || null;
+}
+function loadVoices(){
+  if(!TTS) return;
+  deVoices = speechSynthesis.getVoices().filter(function(v){ return /^de([-_]|$)/i.test(v.lang); })
+    .sort(function(a,b){ return voiceScore(b) - voiceScore(a); });
+  var cur = pickVoice();
+  $("voiceSel").innerHTML = deVoices.map(function(v){
+    return '<option value="'+esc(v.name)+'"'+(cur&&cur.name===v.name?' selected':'')+'>'+esc(v.name)+'</option>';
+  }).join("");
+  $("voiceSel").disabled = deVoices.length === 0;
+  $("voiceNote").textContent = !deVoices.length
+    ? "ドイツ語の音声がこの端末に見つからない。OS の言語設定でドイツ語の音声を追加するか、Edge(高品質の Natural 音声がある)で開く。"
+    : "";
+}
+function say(text){
+  if(!TTS || !text) return;
+  speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text), v = pickVoice();
+  u.lang = "de-DE"; u.rate = +store.rate || 0.9;
+  if(v){ u.voice = v; u.lang = v.lang; }
+  speechSynthesis.speak(u);
+}
+function plain(h){ return String(h).replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim(); }
+function deSpeech(h){
+  var t = plain(h);
+  /* 日本語を含む・A/B の記号を含む(nicht A, sondern B)ものは読まない */
+  return (t && !/[　-鿿＀-￯]/.test(t) && !/\b[AB]\b/.test(t)) ? t : "";
+}
+function qSay(it){ return /class='blank'/.test(it.q) ? "" : deSpeech(it.q); }
+function aSay(it){ return deSpeech(it.a[0]); }
+
+/* ============================================================
+   採点
+   ============================================================ */
+function toUmlaut(s){
+  return s.replace(/a:/g,"ä").replace(/o:/g,"ö").replace(/u:/g,"ü")
+          .replace(/A:/g,"Ä").replace(/O:/g,"Ö").replace(/U:/g,"Ü");
+}
+function fold(s, strict){
+  s = (s||"").normalize("NFC").replace(/[.,!?;:…、。？！]/g,"").replace(/\s+/g," ").trim();
+  if(strict) return s;
+  return s.toLowerCase().replace(/ß/g,"ss").replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue");
+}
+function judge(input, item, strict){
+  var u = fold(input, strict);
+  if(!u) return {ok:false};
+  for(var i=0;i<item.a.length;i++){
+    if(fold(item.a[i], strict) === u) return {ok:true};
+  }
+  return {ok:false};
+}
+
+/* ============================================================
+   画面
+   ============================================================ */
+function $(id){ return document.getElementById(id); }
+var queue = [], idx = 0, nOk = 0, nAll = 0, streak = 0, wrongIds = [], graded = false, curSelf = false;
+
+function esc(s){ return String(s).replace(/[&<>]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c]; }); }
+function chipHtml(list, sel){
+  return list.map(function(v){
+    return '<span class="chip'+(sel.indexOf(v)>=0?' on':'')+'" data-v="'+v+'">'+v+'</span>';
+  }).join(" ");
+}
+function renderSetup(){
+  $("chChips").innerHTML  = chipHtml(CHS.map(function(c){return "第"+c+"章";}), store.chs.map(function(c){return "第"+c+"章";}));
+  $("secChips").innerHTML = chipHtml(SECS, store.secs);
+  ["shuffle","onlyWrong","strict"].forEach(function(id){
+    $(id).classList.toggle("on", !!store[id]);
+  });
+  updateCount();
+}
+function selected(){
+  return POOL.filter(function(it){
+    return store.chs.indexOf(it.ch)>=0 && store.secs.indexOf(it.sec)>=0 &&
+           (!store.onlyWrong || store.rec[it.id]==="ng");
+  });
+}
+function updateCount(){
+  var n = selected().length;
+  $("cnt").textContent = n + " 問";
+  $("start").disabled = n === 0;
+}
+$("chChips").addEventListener("click", function(e){
+  var c = e.target.closest(".chip"); if(!c) return;
+  var ch = +c.dataset.v.replace(/[^0-9]/g,"");
+  var i = store.chs.indexOf(ch);
+  if(i>=0) store.chs.splice(i,1); else store.chs.push(ch);
+  c.classList.toggle("on"); save(); updateCount();
+});
+$("secChips").addEventListener("click", function(e){
+  var c = e.target.closest(".chip"); if(!c) return;
+  var v = c.dataset.v, i = store.secs.indexOf(v);
+  if(i>=0) store.secs.splice(i,1); else store.secs.push(v);
+  c.classList.toggle("on"); save(); updateCount();
+});
+["shuffle","onlyWrong","strict"].forEach(function(id){
+  $(id).addEventListener("click", function(){
+    store[id] = store[id] ? 0 : 1;
+    $(id).classList.toggle("on", !!store[id]);
+    save(); updateCount();
+  });
+});
+
+function start(list){
+  queue = list.slice();
+  if(store.shuffle){
+    for(var i=queue.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1)), t = queue[i]; queue[i] = queue[j]; queue[j] = t;
+    }
+  }
+  idx=0; nOk=0; nAll=0; streak=0; wrongIds=[];
+  $("setup").classList.add("hidden"); $("done").classList.add("hidden"); $("quiz").classList.remove("hidden");
+  $("keys").innerHTML = ["ä","ö","ü","ß","Ä","Ö","Ü"].map(function(c){ return '<button data-c="'+c+'">'+c+'</button>'; }).join("");
+  show();
+}
+function show(){
+  if(idx >= queue.length) return finish();
+  var it = queue[idx];
+  graded = false; curSelf = (it.grade === "self");
+  $("qtag").textContent = "第"+it.ch+"章 / "+it.sec;
+  $("qpos").textContent = (idx+1)+" / "+queue.length;
+  $("qtext").innerHTML = it.q;
+  $("qsub").innerHTML = it.sub || "";
+  $("barFill").style.width = (idx/queue.length*100)+"%";
+  $("ans").value = ""; $("ans").className = ""; $("ans").disabled = false;
+  $("ans").placeholder = curSelf ? "答えを書いてから採点(自己採点)" : "ここに入力して Enter";
+  $("fb").classList.add("hidden"); $("fb").innerHTML = "";
+  $("check").textContent = "採点 (Enter)"; $("check").disabled = false;
+  $("hintBtn").disabled = false; $("giveup").disabled = false;
+  $("sOk").textContent = nOk; $("sAll").textContent = nAll; $("sStreak").textContent = streak;
+  var qs = qSay(it);
+  $("spkQ").classList.toggle("hidden", !TTS || !qs);
+  if(store.auto && qs) say(qs);
+  $("ans").focus();
+}
+function record(id, ok){
+  store.rec[id] = ok ? "ok" : "ng"; save();
+  nAll++;
+  if(ok){ nOk++; streak++; }
+  else { streak = 0; if(wrongIds.indexOf(id)<0) wrongIds.push(id); }
+  $("sOk").textContent = nOk; $("sAll").textContent = nAll; $("sStreak").textContent = streak;
+}
+function feedback(it, res, userRaw){
+  var fb = $("fb");
+  fb.className = "fb";
+  var h = "";
+  if(curSelf){
+    fb.classList.add("self");
+    h += '<div class="verdict">模範解答</div>';
+    h += '<div class="model">'+esc(it.a[0])+'</div>';
+    h += '<div class="alt">自分の答えと見比べて ○ / × を押す。</div>';
+  }else if(res.ok){
+    fb.classList.add("ok");
+    var canon = it.a[0];
+    var exact = fold(userRaw,true) === fold(canon,true);
+    h += '<div class="verdict">正解'+(exact?"":" (表記ちがい)")+'</div>';
+    if(!exact) h += '<div class="model">'+esc(canon)+'</div><div class="alt">綴り・大文字小文字を確かめる。</div>';
+    if(it.a.length>1) h += '<div class="alt">別解: '+it.a.slice(1).map(esc).join(" / ")+'</div>';
+  }else{
+    fb.classList.add("ng");
+    h += '<div class="verdict">ちがう</div>';
+    h += '<div class="model">'+esc(it.a[0])+'</div>';
+    if(userRaw && userRaw.trim()) h += '<div class="alt">入力: '+esc(userRaw.trim())+'</div>';
+    if(it.a.length>1) h += '<div class="alt">別解: '+it.a.slice(1).map(esc).join(" / ")+'</div>';
+  }
+  if(it.expl) h += '<div class="expl">'+it.expl+'</div>';
+  if(it.ref)  h += '<div class="alt" style="margin-top:6px;color:var(--fg3)">→ '+esc(it.ref)+'</div>';
+  if(curSelf){
+    h += '<div class="acts"><button class="btn ok sm" id="selfOk">○ 合っていた (1)</button>'+
+         '<button class="btn ng sm" id="selfNg">× ちがった (2)</button></div>';
+  }
+  fb.innerHTML = h;
+  var as = aSay(it);
+  if(TTS && as){
+    fb.querySelector(".verdict").insertAdjacentHTML("beforeend",
+      '<button class="btn sm spk" id="spkA" title="もう一度聞く (Ctrl+.)">🔊 答えを聞く</button>');
+    if(store.auto) say(as);
+  }
+  if(curSelf){
+    $("selfOk").onclick = function(){ record(it.id,true);  afterSelf(); };
+    $("selfNg").onclick = function(){ record(it.id,false); afterSelf(); };
+  }
+}
+function afterSelf(){
+  curSelf = false;
+  $("check").textContent = "次へ (Enter)"; $("check").disabled = false;
+  if($("selfOk")) $("selfOk").disabled = true;
+  if($("selfNg")) $("selfNg").disabled = true;
+  $("ans").focus();
+}
+function doCheck(){
+  var it = queue[idx];
+  if(!graded){
+    var raw = $("ans").value;
+    var res = curSelf ? {ok:null} : judge(raw, it, store.strict);
+    graded = true;
+    $("ans").disabled = true;
+    $("hintBtn").disabled = true; $("giveup").disabled = true;
+    if(curSelf){
+      $("check").disabled = true;            /* ○ / × を押すまで進めない */
+    }else{
+      $("ans").className = res.ok ? "correct" : "wrong";
+      record(it.id, res.ok);
+      $("check").textContent = "次へ (Enter)";
+    }
+    feedback(it, res, raw);
+  }else{
+    idx++; show();
+  }
+}
+$("check").addEventListener("click", doCheck);
+$("hintBtn").addEventListener("click", function(){
+  var it = queue[idx];
+  $("fb").className = "fb self";
+  $("fb").innerHTML = '<div class="verdict">ヒント</div><div class="alt">'+esc(it.hint||"—")+'</div>';
+  $("ans").focus();
+});
+$("giveup").addEventListener("click", function(){
+  if(graded) return;
+  var it = queue[idx];
+  graded = true; curSelf = false;
+  $("ans").disabled = true; $("ans").className = "wrong";
+  $("hintBtn").disabled = true; $("giveup").disabled = true;
+  record(it.id, false);
+  $("check").textContent = "次へ (Enter)";
+  feedback(it, {ok:false}, $("ans").value);
+});
+$("quit").addEventListener("click", finish);
+function replay(){
+  var it = queue[idx]; if(!it) return;
+  say(graded && aSay(it) ? aSay(it) : qSay(it));
+  if(!$("ans").disabled) $("ans").focus();
+}
+$("spkQ").addEventListener("click", function(){ say(qSay(queue[idx])); if(!$("ans").disabled) $("ans").focus(); });
+$("fb").addEventListener("click", function(e){
+  if(e.target.closest("#spkA")){ say(aSay(queue[idx])); if(!$("ans").disabled) $("ans").focus(); }
+});
+$("autoSpeak").addEventListener("click", function(){
+  store.auto = store.auto ? 0 : 1; $("autoSpeak").classList.toggle("on", !!store.auto); save();
+  if(!store.auto && TTS) speechSynthesis.cancel();
+});
+$("voiceSel").addEventListener("change", function(){ store.voice = $("voiceSel").value; save(); say("Guten Tag."); });
+$("rateSel").addEventListener("change", function(){ store.rate = +$("rateSel").value; save(); say("Guten Tag. Wie geht es Ihnen?"); });
+$("voiceTest").addEventListener("click", function(){ say("Guten Tag. Ich heiße Hans Meyer und wohne in Hamburg."); });
+$("keys").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b) return;
+  var el = $("ans"); if(el.disabled) return;
+  var p = el.selectionStart, q = el.selectionEnd;
+  el.value = el.value.slice(0,p) + b.dataset.c + el.value.slice(q);
+  el.selectionStart = el.selectionEnd = p + 1; el.focus();
+});
+$("ans").addEventListener("input", function(e){
+  var el = e.target, before = el.value, pos = el.selectionStart;
+  var after = toUmlaut(before);
+  if(after !== before){
+    el.value = after;
+    var d = before.length - after.length;
+    el.selectionStart = el.selectionEnd = Math.max(0, pos - d);
+  }
+});
+document.addEventListener("keydown", function(e){
+  if($("quiz").classList.contains("hidden")) return;
+  if((e.ctrlKey || e.metaKey) && e.key === "."){ e.preventDefault(); replay(); return; }
+  if(e.key === "Enter"){
+    e.preventDefault();
+    if(!$("check").disabled) doCheck();
+    return;
+  }
+  var so = $("selfOk");
+  if(graded && so && !so.disabled){
+    if(e.key === "1"){ e.preventDefault(); so.click(); }
+    if(e.key === "2"){ e.preventDefault(); $("selfNg").click(); }
+  }
+});
+
+function finish(){
+  if(TTS) speechSynthesis.cancel();
+  $("quiz").classList.add("hidden"); $("done").classList.remove("hidden");
+  var rate = nAll ? Math.round(nOk/nAll*100) : 0;
+  $("rRate").textContent = rate + "%";
+  $("rDetail").textContent = nOk + " / " + nAll + " 問正解" + (idx < queue.length ? "(途中で中断)" : "");
+  var list = POOL.filter(function(it){ return wrongIds.indexOf(it.id) >= 0; });
+  $("rWrong").innerHTML = list.length
+    ? '<table><tr><th>種類</th><th>問題</th><th>答え</th></tr>' + list.map(function(it){
+        return '<tr><td>'+esc(it.sec)+'</td><td>'+esc(it.q.replace(/<[^>]+>/g,""))+'</td><td class="de">'+esc(it.a[0])+'</td></tr>';
+      }).join("") + '</table>'
+    : '<p class="note">まちがいなし。</p>';
+  $("again").disabled = list.length === 0;
+  $("again").dataset.n = list.length;
+  window.__wrongList = list;
+}
+$("again").addEventListener("click", function(){
+  var l = window.__wrongList || [];
+  if(l.length) start(l);
+});
+$("back").addEventListener("click", function(){
+  $("done").classList.add("hidden"); $("setup").classList.remove("hidden"); renderSetup();
+});
+$("reset").addEventListener("click", function(){
+  if(!confirm("保存した成績(正解・不正解の記録)を消します。よろしいですか?")) return;
+  store.rec = {}; save(); updateCount();
+  alert("消しました。");
+});
+$("start").addEventListener("click", function(){ start(selected()); });
+
+renderSetup();
+$("autoSpeak").classList.toggle("on", !!store.auto);
+$("rateSel").value = String(store.rate);
+if(TTS){
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;   /* 音声一覧は非同期で届くことがある */
+}else{
+  ["autoSpeak","voiceSel","rateSel","voiceTest"].forEach(function(id){ $(id).classList.add("hidden"); });
+  $("voiceNote").textContent = "このブラウザは音声合成に未対応。";
+}
+</script>
+</body>
+</html>
