@@ -12,14 +12,12 @@
     --ok:#ffce00; --ng:#e5493f; --info:#e59a3a;
     --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
-  body::before{content:"";position:fixed;top:0;left:0;right:0;height:6px;z-index:50;
-    background:linear-gradient(#000 0 2px,#dd0000 2px 4px,#ffce00 4px 6px);pointer-events:none}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
     background:var(--bg); color:var(--fg);
     font-family:"Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif;
-    font-size:14px; line-height:1.65; padding:26px 16px 80px;
+    font-size:14px; line-height:1.65; padding:20px 16px 80px;
   }
   .wrap{max-width:860px;margin:0 auto}
   h1{font-size:20px;margin:0 0 4px;letter-spacing:.04em;color:var(--ac2);font-weight:600}
@@ -179,7 +177,7 @@
 <script>
 "use strict";
 
-/* 出題データは同じフォルダの data.js が window.DRILL_DATA に置く(scripts/build_drill.mjs が原本から作る) */
+/* 出題データは同じフォルダの data.js が window.DRILL_DATA に置く(ドイツ語/build.mjs がデータから作る) */
 const DATA = window.DRILL_DATA;
 if(!DATA){ document.body.innerHTML = "<p style='padding:24px'>出題データ data.js がありません。ビルドしてから開いてください。</p>"; throw new Error("data.js がありません"); }
 const CH = DATA.CH, VOCAB = DATA.VOCAB;

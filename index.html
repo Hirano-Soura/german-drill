@@ -16,15 +16,13 @@
     --ok:#ffce00; --ng:#e5493f; --onac:#1a1509; --mono:ui-monospace,Menlo,Consolas,monospace;
     color-scheme:dark;
   }
-  body::before{content:"";position:fixed;top:0;left:0;right:0;height:6px;z-index:50;
-    background:linear-gradient(#000 0 2px,#dd0000 2px 4px,#ffce00 4px 6px);pointer-events:none}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
     background:var(--bg);color:var(--fg);
     font-family:"Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif;
     font-size:15px;line-height:1.65;
-    padding:22px 16px calc(60px + env(safe-area-inset-bottom));
+    padding:14px 16px calc(60px + env(safe-area-inset-bottom));
     -webkit-text-size-adjust:100%;
   }
   .wrap{max-width:640px;margin:0 auto}
@@ -152,7 +150,7 @@
 
 </div>
 
-<script src="data.js?v=8738beafad"></script>
+<script src="data.js?v=00405bbef2"></script>
 <script>
 'use strict';
 /* ================= 共通 ================= */
@@ -162,9 +160,14 @@ const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const tbl=(h,rows)=>'<table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+r.map((c,i)=>'<td'+(i>0?' class="de"':'')+'>'+c+'</td>').join('')+'</tr>').join('')+'</table>';
 
-/* ================= 数詞 ================= */
-const ONES=['null','eins','zwei','drei','vier','fünf','sechs','sieben','acht','neun','zehn','elf','zwölf','dreizehn','vierzehn','fünfzehn','sechzehn','siebzehn','achtzehn','neunzehn'];
-const TENS=['','','zwanzig','dreißig','vierzig','fünfzig','sechzig','siebzig','achtzig','neunzig'];
+/* ================= データ ================= */
+/* 出題データ(語・句・テーマの説明・解説・例)はすべて data.js が window.DRILL_DATA に置く(ドイツ語/build.mjs がデータから作る)。
+   画面が持つのは、データからカードと一覧表を組み立てる手続きだけ(ルール LC-9) */
+if(!window.DRILL_DATA){ document.body.innerHTML = "<p style='padding:24px'>出題データ data.js がありません。ビルドしてから開いてください。</p>"; throw new Error("data.js がありません"); }
+const D=window.DRILL_DATA;
+const {ONES,TENS,ORD_IRREG,MONTHS,TIME_INFORMAL,ART,NOUNS,PERS,PRON,VERBS,VJA,THEMES}=window.DRILL_DATA;
+
+/* ================= 数詞(組み立て規則) ================= */
 function numAll(n){
   if(n<20) return [ONES[n]];
   if(n<100){const u=n%10,t=Math.floor(n/10);return [u? (u===1?'ein':ONES[u])+'und'+TENS[t] : TENS[t]];}
@@ -183,51 +186,28 @@ function yearAll(y){
   return numAll(y);
 }
 function ordAll(n){
-  const sp={1:'erste',3:'dritte',7:'siebte',8:'achte'};
-  if(sp[n]) return [sp[n]];
+  if(ORD_IRREG[n]) return [ORD_IRREG[n]];
   if(n<20) return [ONES[n]+'te'];
   return numAll(n).map(x=>x+'ste');
 }
-const MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-const MONTHS_JA=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
-/* ================= 時刻 ================= */
+/* ================= 時刻(組み立て規則) ================= */
 const hUhr=h=>h===1?'ein':num(h);
 const hNach=h=>h===1?'eins':num(h);
+const pad=n=>String(n).padStart(2,'0');
 function timeOfficial(){
   const h=rnd(0,23),m=Math.random()<.35?0:rnd(1,59);
   const ans=hUhr(h)+' Uhr'+(m?' '+num(m):'');
   return {p:pad(h)+':'+pad(m),pl:'公式(24時間制)で言う',a:[ans],show:ans,type:'de',dir:'w',es:1};
 }
-const pad=n=>String(n).padStart(2,'0');
 function timeInformal(){
   const h=rnd(1,12),m=5*rnd(0,11),h2=h%12+1;
-  let a=[],show;
-  const N=hNach(h),N2=hNach(h2);
-  const off=hUhr(h)+' Uhr'+(m?' '+num(m):'');
-  switch(m){
-    case 0:  a=[hUhr(h)+' Uhr'];break;
-    case 5:  a=['fünf nach '+N];break;
-    case 10: a=['zehn nach '+N];break;
-    case 15: a=['Viertel nach '+N];break;
-    case 20: a=['zwanzig nach '+N,'zehn vor halb '+N2];break;
-    case 25: a=['fünf vor halb '+N2];break;
-    case 30: a=['halb '+N2];break;
-    case 35: a=['fünf nach halb '+N2];break;
-    case 40: a=['zwanzig vor '+N2,'zehn nach halb '+N2];break;
-    case 45: a=['Viertel vor '+N2];break;
-    case 50: a=['zehn vor '+N2];break;
-    case 55: a=['fünf vor '+N2];break;
-  }
-  if(m) a.push(off);
-  show=a[0]+(a.length>1?'  (他: '+a.slice(1).join(' / ')+')':'');
+  const fill={U:hUhr(h),N:hNach(h),N2:hNach(h2)};
+  const a=TIME_INFORMAL[m].map(s=>s.replace(/\{(U|N2|N)\}/g,(_,k)=>fill[k]));
+  if(m) a.push(hUhr(h)+' Uhr '+num(m));
+  const show=a[0]+(a.length>1?'  (他: '+a.slice(1).join(' / ')+')':'');
   return {p:h+':'+pad(m),pl:'日常(12時間制)で言う',a,show,type:'de',dir:'w',es:1};
 }
-
-/* ================= データ ================= */
-/* 出題データは同じフォルダの data.js が window.DRILL_DATA に置く(scripts/build_drill.mjs が原本から作る) */
-if(!window.DRILL_DATA){ document.body.innerHTML = "<p style='padding:24px'>出題データ data.js がありません。ビルドしてから開いてください。</p>"; throw new Error("data.js がありません"); }
-const {GREET,DAYS,SEASONS,DAYPARTS,TIMEWORDS,WH,NOUNS,ART,PERS,PRON,VERBS,VJA}=window.DRILL_DATA;
 
 /* ================= カード生成ヘルパ ================= */
 function pairCards(pairs){
@@ -239,157 +219,48 @@ function pairCards(pairs){
   return out;
 }
 function pairRef(pairs,h1,h2){return tbl([h1,h2],pairs.map(x=>[esc(x[0]),esc(x[1])]));}
-const artCards=()=>{
-  const out=[];
-  for(const [name,g] of Object.entries(ART)){
-    [['m','男性'],['f','女性'],['n','中性'],['p','複数']].forEach(([k,jn])=>{
-      if(!g[k]) return;
-      [[0,'1格'],[1,'4格'],[2,'3格'],[3,'2格']].forEach(([i,cn])=>{
-        out.push({p:name+'\n'+jn+' ・ '+cn,pl:'語尾つきの形を書く',a:[g[k][i]],show:g[k][i],type:'de',dir:'w'});
-      });
-    });
-  }
-  return out;
-};
 
-/* ================= テーマ定義 ================= */
-const DECKS=[
-{
-  id:'num1',title:'数字 0〜20',sub:'基数。11〜19 の綴りと 16・17 の変則を固める',
-  gen(){const o=[];for(let n=0;n<=20;n++){
-    o.push({p:String(n),pl:'ドイツ語で書く',a:[num(n)],show:num(n),type:'ns',dir:'w'});
-    o.push({p:num(n),pl:'数字で答える',a:[String(n)],show:String(n),type:'num',dir:'r',say:1});
-  }return o;},
-  ref(){
-    const r=[];for(let i=0;i<=10;i++){const b=i+10;r.push([String(i),ONES[i],String(b),b<20?ONES[b]:'zwanzig']);}
-    return tbl(['数','語','数','語'],r)+
-    '<ul><li>1 は単独では <b>eins</b>、語の前では <b>ein</b>(ein Uhr / einundzwanzig)</li>'+
-    '<li><b>sechs → sechzehn</b>(s が落ちる)、<b>sieben → siebzehn</b>(en が落ちる)</li>'+
-    '<li>12 は <b>zwölf</b>、11 は <b>elf</b>(-zehn 型ではない)</li>'+
-    '<li>数詞は 1 語でつなげて書く</li></ul>';
-  }
-},
-{
-  id:'num2',title:'数字 20〜100',sub:'十の位と「一の位 + und + 十の位」の組み立て',
-  gen(){const o=[];for(let n=20;n<=100;n++){
+/* ================= テーマの種類ごとのカード生成(テーマは THEMES の kind で引く) ================= */
+const GEN={
+  numRange(t){const o=[];for(let n=t.from;n<=t.to;n++){
     o.push({p:String(n),pl:'ドイツ語で書く',a:numAll(n),show:num(n),type:'ns',dir:'w'});
     o.push({p:num(n),pl:'数字で答える',a:[String(n)],show:String(n),type:'num',dir:'r',say:1});
   }return o;},
-  ref(){
-    return tbl(['数','語'],[20,30,40,50,60,70,80,90,100].map(n=>[String(n),num(n)]))+
-    '<ul><li>21〜99 は <b>一の位 + und + 十の位</b>。順序が日本語と逆(21 = einundzwanzig、「1 と 20」)</li>'+
-    '<li>一の位の 1 は <b>ein</b>(einundzwanzig)</li>'+
-    '<li>30 は <b>dreißig</b>(ß)、60 は <b>sechzig</b>(s が落ちる)、70 は <b>siebzig</b>(en が落ちる)</li>'+
-    '<li>例: 47 = siebenundvierzig / 68 = achtundsechzig / 99 = neunundneunzig</li></ul>';
-  }
-},
-{
-  id:'num3',title:'数字 100 以上・年号',sub:'hundert・tausend の位と、年の読み方(1100〜1999 は hundert 読み)',
-  gen(){
-    const o=[];
-    const ns=[100,101,110,111,120,200,250,300,365,400,500,666,700,800,900,999,1000,1001,1500,2000,2500,5000,10000,100000];
-    while(ns.length<44) ns.push(rnd(101,999));
-    for(const n of ns.slice(0,44)){
-      o.push({p:String(n),pl:'ドイツ語で書く',a:numAll(n),show:numAll(n).join(' / '),type:'ns',dir:'w'});
-    }
-    for(const n of [100,200,321,999,1000,2000,10000]){
-      o.push({p:num(n),pl:'数字で答える',a:[String(n)],show:String(n),type:'num',dir:'r',say:1});
-    }
-    o.push({p:'1 000 000',pl:'ドイツ語で書く(名詞)',a:['eine Million'],show:'eine Million',type:'de',dir:'w'});
-    o.push({p:'eine Million',pl:'数字で答える',a:['1000000'],show:'1000000',type:'num',dir:'r',say:1});
-    for(const y of [1066,1517,1789,1871,1914,1945,1989,1990,1999,2000,2011,2020,2026]){
-      o.push({p:y+'年',pl:'年号をドイツ語で書く',a:yearAll(y),show:yearAll(y).join(' / '),type:'ns',dir:'w'});
-    }
+  numBig(t){
+    const o=[],ns=t.write.slice();
+    while(ns.length<t.writeTotal) ns.push(rnd(t.fillFrom,t.fillTo));
+    for(const n of ns.slice(0,t.writeTotal)) o.push({p:String(n),pl:'ドイツ語で書く',a:numAll(n),show:numAll(n).join(' / '),type:'ns',dir:'w'});
+    for(const n of t.read) o.push({p:num(n),pl:'数字で答える',a:[String(n)],show:String(n),type:'num',dir:'r',say:1});
+    o.push(...JSON.parse(JSON.stringify(t.cards)));
+    for(const y of t.years) o.push({p:y+'年',pl:'年号をドイツ語で書く',a:yearAll(y),show:yearAll(y).join(' / '),type:'ns',dir:'w'});
     return o;
   },
-  ref(){
-    return tbl(['数','語'],[[ '100','hundert / einhundert'],['101','hunderteins'],['200','zweihundert'],['365','dreihundertfünfundsechzig'],['1000','tausend / eintausend'],['2500','zweitausendfünfhundert'],['10000','zehntausend'],['100000','hunderttausend'],['1000000','eine Million(名詞・大文字)']])+
-    '<ul><li>百の位と十の位の間に <b>und は入れない</b>(123 = hundertdreiundzwanzig)</li>'+
-    '<li>1 万・10 万は <b>zehntausend / hunderttausend</b>(万の単位はなく、千の何倍かで言う)</li></ul>'+
-    '<h3>年号</h3>'+tbl(['年','語'],[['1990','neunzehnhundertneunzig'],['1871','achtzehnhunderteinundsiebzig'],['2000','zweitausend'],['2026','zweitausendsechsundzwanzig']])+
-    '<ul><li><b>1100〜1999 年は「◯◯ hundert」読み</b>(19 hundert 90)</li><li><b>2000 年以降は通常の数字の読み</b>(zweitausend…)</li><li>「〜年に」は前置詞なしの <b>1990</b> か <b>im Jahr(e) 1990</b></li></ul>';
-  }
-},
-{
-  id:'ord',title:'序数・日付',sub:'1.〜31. の序数と、日付「am 3. Oktober」の 3 格語尾',
-  gen(){
+  ord(t){
     const o=[];
-    for(let n=1;n<=31;n++) o.push({p:n+'.',pl:'序数(der ○○)を書く',a:ordAll(n),show:ordAll(n)[0],type:'ns',dir:'w'});
-    for(const n of [100,1000]){ const w=ordAll(n);w.push(n===100?'hundertste':'tausendste'); o.push({p:n+'.',pl:'序数(der ○○)を書く',a:w,show:w[0],type:'ns',dir:'w'});}
-    for(let i=0;i<24;i++){
+    for(let n=1;n<=t.to;n++) o.push({p:n+'.',pl:'序数(der ○○)を書く',a:ordAll(n),show:ordAll(n)[0],type:'ns',dir:'w'});
+    for(const [n,alt] of t.big){const w=ordAll(n);w.push(alt);o.push({p:n+'.',pl:'序数(der ○○)を書く',a:w,show:w[0],type:'ns',dir:'w'});}
+    for(let i=0;i<t.dates;i++){
       const d=rnd(1,31),m=rnd(0,11);
-      const a=ordAll(d).map(x=>'am '+x+'n '+MONTHS[m]);
-      o.push({p:MONTHS_JA[m]+d+'日に',pl:'「am ○○ Monat」で書く',a,show:a[0],type:'de',dir:'w'});
+      const a=ordAll(d).map(x=>'am '+x+'n '+MONTHS[m][1]);
+      o.push({p:MONTHS[m][0]+d+'日に',pl:'「am ○○ Monat」で書く',a,show:a[0],type:'de',dir:'w'});
     }
     return o;
   },
-  ref(){
-    return '<ul><li>数字 + <b>ピリオド</b> で序数を表す(3. = dritte)</li>'+
-    '<li>〜19 は <b>基数 + te</b>、20 以上は <b>基数 + ste</b></li>'+
-    '<li>不規則: <b>1. erste / 3. dritte / 7. siebte / 8. achte</b></li>'+
-    '<li>序数は形容詞と同じ語尾がつく(der dritte / am dritten)</li></ul>'+
-    tbl(['形','例文'],[['1 格','Heute ist der dritte Oktober.'],['4 格','Den Wievielten haben wir heute? — Den dritten Oktober.'],['3 格(〜に)','Ich habe am dritten Oktober Geburtstag.']])+
-    '<p>「○月○日に」は <b>am + 序数(3 格語尾 -n)+ 月名</b>。例: am ersten Mai / am zwanzigsten Juli</p>';
-  }
-},
-{
-  id:'time',title:'時刻の言い方',sub:'公式(24時間制)と日常(12時間制・halb / Viertel)',
-  gen(){const o=[];for(let i=0;i<20;i++)o.push(timeOfficial());for(let i=0;i<20;i++)o.push(timeInformal());return o;},
-  ref(){
-    return '<h3>公式(24 時間制)</h3><p>時 + <b>Uhr</b> + 分。<b>14:35 = vierzehn Uhr fünfunddreißig</b>(0:00 = null Uhr、1 時 = ein Uhr)</p>'+
-    '<h3>日常(12 時間制)</h3>'+tbl(['時刻','言い方(3 時台)'],[
-      ['3:00','drei Uhr'],['3:05','fünf nach drei'],['3:10','zehn nach drei'],['3:15','Viertel nach drei'],['3:20','zwanzig nach drei / zehn vor halb vier'],
-      ['3:25','fünf vor halb vier'],['3:30','<b>halb vier</b>'],['3:35','fünf nach halb vier'],['3:40','zwanzig vor vier / zehn nach halb vier'],
-      ['3:45','Viertel vor vier'],['3:50','zehn vor vier'],['3:55','fünf vor vier']])+
-    '<ul><li><b>halb は「次の時刻に向かって半分」</b>。halb vier = 3:30(4:30 ではない)</li>'+
-    '<li>nach / vor の後は数字だけ。<b>「1」は eins</b>(fünf nach eins)、ただし Uhr の前は <b>ein Uhr</b></li>'+
-    '<li>問い: <b>Wie spät ist es?</b> / <b>Wie viel Uhr ist es?</b>(今何時)、<b>Um wie viel Uhr …?</b>(何時に)</li>'+
-    '<li>答え: <b>Es ist ...</b>(今 …)、<b>um ... Uhr</b>(… 時に)</li></ul>';
-  }
-},
-{
-  id:'cal',title:'曜日・月・季節・時間帯',sub:'名詞はすべて男性(Nacht だけ女性)。前置詞 am / im も一緒に',
-  gen(){
-    const c=[];
-    c.push(...pairCards(DAYS));
-    c.push(...MONTHS.flatMap((m,i)=>pairCards([[MONTHS_JA[i],m]])));
-    c.push(...pairCards(SEASONS),...pairCards(DAYPARTS),...pairCards(TIMEWORDS));
-    return c;
-  },
-  ref(){
-    return '<h3>曜日(すべて der / 男性)</h3>'+pairRef(DAYS,'日本語','ドイツ語')+
-    '<h3>月(すべて der / 男性)</h3>'+tbl(['月','ドイツ語','月','ドイツ語'],[0,1,2,3,4,5].map(i=>[MONTHS_JA[i],MONTHS[i],MONTHS_JA[i+6],MONTHS[i+6]]))+
-    '<h3>季節</h3>'+pairRef(SEASONS.map(x=>[x[0],'der '+x[1]]),'日本語','ドイツ語')+
-    '<h3>時間帯</h3>'+pairRef(DAYPARTS,'日本語','ドイツ語')+
-    '<h3>副詞・前置詞句</h3>'+pairRef(TIMEWORDS,'日本語','ドイツ語')+
-    '<ul><li>曜日・時間帯 → <b>am</b>(am Montag / am Abend)</li><li>月・季節 → <b>im</b>(im Mai / im Winter)</li><li>時刻 → <b>um</b>(um acht Uhr)</li><li>夜だけ <b>in der Nacht</b></li></ul>';
-  }
-},
-{
-  id:'greet',title:'挨拶・日常表現',sub:'あいさつ・お礼・自己紹介・聞き返しの定型句',
-  gen(){return pairCards(GREET);},
-  ref(){return pairRef(GREET,'日本語','ドイツ語')+'<ul><li>Sie は敬称(初対面・目上)、du は親称(友人・家族)。Wie geht es Ihnen? / Wie geht es dir?</li><li>入力は大文字小文字と文末の記号(. ! ?)を区別しません</li></ul>';}
-},
-{
-  id:'art',title:'冠詞の格変化',sub:'定冠詞・ein・kein / mein・dieser 型(1 格・4 格・3 格・2 格)',
-  gen(){return artCards();},
-  ref(){
-    let h='';
+  time(t){const o=[];for(let i=0;i<t.official;i++)o.push(timeOfficial());for(let i=0;i<t.informal;i++)o.push(timeInformal());return o;},
+  pairs(t){return t.src.flatMap(k=>pairCards(D[k]));},
+  art(){
+    const out=[];
     for(const [name,g] of Object.entries(ART)){
-      const row=(k,jn)=>g[k]?[jn,g[k][0],g[k][1],g[k][2],g[k][3]]:[jn,'—','—','—','—'];
-      h+='<h3>'+name+'</h3>'+tbl(['','1 格','4 格','3 格','2 格'],[row('m','男性'),row('f','女性'),row('n','中性'),row('p','複数')]);
+      [['m','男性'],['f','女性'],['n','中性'],['p','複数']].forEach(([k,jn])=>{
+        if(!g[k]) return;
+        [[0,'1格'],[1,'4格'],[2,'3格'],[3,'2格']].forEach(([i,cn])=>{
+          out.push({p:name+'\n'+jn+' ・ '+cn,pl:'語尾つきの形を書く',a:[g[k][i]],show:g[k][i],type:'de',dir:'w'});
+        });
+      });
     }
-    h+='<ul><li>男性の 4 格だけ <b>-en</b>(den / einen / keinen / diesen)</li>'+
-    '<li><b>女性・複数の 1 格と 4 格は同形</b>、中性も 1 格 = 4 格</li>'+
-    '<li>3 格は m / n が <b>-em</b>、f が <b>-er</b>、複数が <b>-en</b>(名詞にも -n がつく)</li>'+
-    '<li>2 格は m / n が <b>-(e)s</b>、f と複数が <b>-er</b>。mein・dein・sein・ihr・unser・euer・Ihr は kein と同じ変化</li>'+
-    '<li>複数の ein は存在しない(無冠詞)</li></ul>';
-    return h;
-  }
-},
-{
-  id:'noun',title:'名詞の性(der / die / das)',sub:'基本名詞 45 語の冠詞と複数形。性は名詞と一緒に覚える',
-  gen(){
+    return out;
+  },
+  noun(){
     const o=[];
     for(const [art,n,ja,pl] of NOUNS){
       o.push({p:n+'\n('+ja+')',pl:'定冠詞は? der / die / das',a:[art],show:art+' '+n+' — '+(pl==='(なし)'?'複数形なし':'die '+pl),type:'de',dir:'w'});
@@ -398,17 +269,7 @@ const DECKS=[
     }
     return o;
   },
-  ref(){
-    const g=a=>tbl(['単数','意味','複数'],NOUNS.filter(x=>x[0]===a).map(x=>[a+' '+x[1],esc(x[2]),esc(x[3])]));
-    return '<h3>der(男性)</h3>'+g('der')+'<h3>die(女性)</h3>'+g('die')+'<h3>das(中性)</h3>'+g('das')+
-    '<h3>性の見分け</h3><ul><li><b>die</b>: -ung / -heit / -keit / -schaft / -tion / -ei、-e で終わる語の多く</li>'+
-    '<li><b>das</b>: -chen / -lein(縮小)、-ment / -um、動詞の名詞化(das Essen)</li>'+
-    '<li><b>der</b>: 男性の人、曜日・月・季節、-er(職業)、-ling</li></ul>';
-  }
-},
-{
-  id:'pron',title:'人称代名詞・所有冠詞',sub:'ich・du・er … の 4 格・3 格と、mein・dein … の元の形',
-  gen(){
+  pron(){
     const o=[];
     for(const [lb,nm,a4,d3,pos] of PERS){
       o.push({p:lb+'\n4 格',pl:'人称代名詞を書く',a:[a4],show:a4,type:'de',dir:'w'});
@@ -417,58 +278,39 @@ const DECKS=[
     }
     return o;
   },
-  ref(){
-    return tbl(['','1 格','4 格','3 格','所有冠詞'],PERS.map(x=>[esc(x[0]),x[1],x[2],x[3],x[4]]))+
-    '<ul><li>er / sie / es は指す名詞の性で決まる(男性名詞 → er / ihn / ihm)</li>'+
-    '<li>大文字 <b>Sie / Ihnen / Ihr</b> は敬称(あなた)。文中でも大文字</li>'+
-    '<li><b>euer</b> は語尾がつくと e が落ちる(eure Mutter)。<b>unser</b> も unsre と書くことがある</li>'+
-    '<li>所有冠詞は kein と同じ語尾(mein Vater / meinen Vater / meiner Mutter)</li></ul>';
-  }
-},
-{
-  id:'sein',title:'sein・haben・werden の現在変化',sub:'最重要の 3 動詞。不規則なので丸暗記',
-  gen(){
+  verbs(t){
     const o=[];
-    for(const v of ['sein','haben','werden']) VERBS[v].forEach((f,i)=>o.push({p:v+'\n'+PRON[i],pl:'現在形を書く',a:[f],show:f,type:'de',dir:'w'}));
-    return o;
-  },
-  ref(){
-    return tbl(['','sein(〜である)','haben(持つ)','werden(〜になる)'],PRON.map((p,i)=>[p,VERBS.sein[i],VERBS.haben[i],VERBS.werden[i]]))+
-    '<ul><li>sein は全く別の形。wir と sie / Sie は <b>sind</b>(3 つ同形)</li>'+
-    '<li>haben は du <b>hast</b> / er <b>hat</b>(b が落ちる)</li>'+
-    '<li>werden は du <b>wirst</b> / er <b>wird</b>(e→i と語尾)</li></ul>';
-  }
-},
-{
-  id:'modal',title:'話法の助動詞・wissen の現在変化',sub:'können・müssen・wollen・dürfen・sollen・mögen・wissen',
-  gen(){
-    const o=[];
-    for(const v of ['wissen','können','müssen','wollen','dürfen','sollen','mögen']) VERBS[v].forEach((f,i)=>{
-      if(i===5) return; // sie(彼ら) は wir と同形なので省く
-      o.push({p:v+'('+VJA[v]+')\n'+PRON[i],pl:'現在形を書く',a:[f],show:f,type:'de',dir:'w'});
+    for(const v of t.verbs) VERBS[v].forEach((f,i)=>{
+      if(t.skipPersons.includes(i)) return;
+      o.push({p:v+(t.promptMeaning?'('+VJA[v]+')':'')+'\n'+PRON[i],pl:'現在形を書く',a:[f],show:f,type:'de',dir:'w'});
     });
     return o;
   },
-  ref(){
-    const vs=['wissen','können','müssen','wollen','dürfen','sollen','mögen'];
-    return tbl(['']  .concat(vs),PRON.map((p,i)=>[p].concat(vs.map(v=>VERBS[v][i]))))+
-    '<ul><li>単数(ich / er)は <b>語尾なし</b>で同形(ich kann / er kann)</li>'+
-    '<li>幹母音が変わるのは単数だけ(können: kann / können、müssen: muss / müssen)</li>'+
-    '<li>sollen だけは幹母音が変わらない(soll / sollst / soll)</li>'+
-    '<li>wissen も単数で変化する(weiß / weißt / weiß)</li></ul>';
-  }
-},
-{
-  id:'wh',title:'疑問詞',sub:'wer・was・wo・wann・warum・wie … の基本と複合形',
-  gen(){return pairCards(WH);},
-  ref(){
-    return pairRef(WH,'日本語','ドイツ語')+
-    '<ul><li>wer の格変化: <b>wer</b>(1 格)/ <b>wen</b>(4 格)/ <b>wem</b>(3 格)/ <b>wessen</b>(2 格)</li>'+
-    '<li>疑問詞は文頭に置き、<b>動詞は 2 番目</b>(Wo wohnen Sie?)</li>'+
-    '<li>wo(場所)/ woher(出所)/ wohin(方向)を区別する</li></ul>';
-  }
-},
-];
+};
+
+/* ================= 一覧表のうち、データから計算して作るもの(parts の {table:種類} で引く) ================= */
+const REF={
+  onesGrid(){const r=[];for(let i=0;i<=10;i++){const b=i+10;r.push([String(i),ONES[i],String(b),b<20?ONES[b]:'zwanzig']);}return tbl(['数','語','数','語'],r);},
+  numWords(p){return tbl(['数','語'],p.ns.map(n=>[String(n),num(n)]));},
+  pairs(p){return pairRef(D[p.src].map(x=>[x[0],(p.prefix||'')+x[1]]),'日本語','ドイツ語');},
+  monthsGrid(){return tbl(['月','ドイツ語','月','ドイツ語'],[0,1,2,3,4,5].map(i=>[MONTHS[i][0],MONTHS[i][1],MONTHS[i+6][0],MONTHS[i+6][1]]));},
+  art(){
+    let h='';
+    for(const [name,g] of Object.entries(ART)){
+      const row=(k,jn)=>g[k]?[jn,g[k][0],g[k][1],g[k][2],g[k][3]]:[jn,'—','—','—','—'];
+      h+='<h3>'+name+'</h3>'+tbl(['','1 格','4 格','3 格','2 格'],[row('m','男性'),row('f','女性'),row('n','中性'),row('p','複数')]);
+    }
+    return h;
+  },
+  nouns(p){return tbl(['単数','意味','複数'],NOUNS.filter(x=>x[0]===p.art).map(x=>[p.art+' '+x[1],esc(x[2]),esc(x[3])]));},
+  pers(){return tbl(['','1 格','4 格','3 格','所有冠詞'],PERS.map(x=>[esc(x[0]),x[1],x[2],x[3],x[4]]));},
+  verbs(p){return tbl([''].concat(p.verbs.map(v=>p.headMeaning?v+'('+VJA[v]+')':v)),PRON.map((pr,i)=>[pr].concat(p.verbs.map(v=>VERBS[v][i]))));},
+};
+/* parts の 1 つ: 文字列 = そのまま html / {head, rows} = 固定の表 / {table} = REF で計算する表 */
+const part=p=>typeof p==='string'?p:p.table?REF[p.table](p):tbl(p.head,p.rows);
+
+/* ================= テーマ ================= */
+const DECKS=THEMES.map(t=>({id:t.id,title:t.title,sub:t.sub,gen:()=>GEN[t.kind](t),ref:()=>t.parts.map(part).join('')}));
 
 /* ================= 状態 ================= */
 const STORE_KEY='de-kiso-drill-v1';

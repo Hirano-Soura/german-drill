@@ -1,4 +1,32 @@
 window.DRILL_DATA={
+ "MONTHS":[
+  ["1月","Januar"],
+  ["2月","Februar"],
+  ["3月","März"],
+  ["4月","April"],
+  ["5月","Mai"],
+  ["6月","Juni"],
+  ["7月","Juli"],
+  ["8月","August"],
+  ["9月","September"],
+  ["10月","Oktober"],
+  ["11月","November"],
+  ["12月","Dezember"]
+ ],
+ "TIME_INFORMAL":{
+  "0":["{U} Uhr"],
+  "5":["fünf nach {N}"],
+  "10":["zehn nach {N}"],
+  "15":["Viertel nach {N}"],
+  "20":["zwanzig nach {N}","zehn vor halb {N2}"],
+  "25":["fünf vor halb {N2}"],
+  "30":["halb {N2}"],
+  "35":["fünf nach halb {N2}"],
+  "40":["zwanzig vor {N2}","zehn nach halb {N2}"],
+  "45":["Viertel vor {N2}"],
+  "50":["zehn vor {N2}"],
+  "55":["fünf vor {N2}"]
+ },
  "DAYS":[
   ["月曜日","Montag"],
   ["火曜日","Dienstag"],
@@ -190,6 +218,46 @@ window.DRILL_DATA={
   ["das","Fahrrad","自転車","Fahrräder"],
   ["das","Land","国・土地","Länder"]
  ],
+ "ONES":[
+  "null",
+  "eins",
+  "zwei",
+  "drei",
+  "vier",
+  "fünf",
+  "sechs",
+  "sieben",
+  "acht",
+  "neun",
+  "zehn",
+  "elf",
+  "zwölf",
+  "dreizehn",
+  "vierzehn",
+  "fünfzehn",
+  "sechzehn",
+  "siebzehn",
+  "achtzehn",
+  "neunzehn"
+ ],
+ "TENS":[
+  "",
+  "",
+  "zwanzig",
+  "dreißig",
+  "vierzig",
+  "fünfzig",
+  "sechzig",
+  "siebzig",
+  "achtzig",
+  "neunzig"
+ ],
+ "ORD_IRREG":{
+  "1":"erste",
+  "3":"dritte",
+  "7":"siebte",
+  "8":"achte"
+ },
  "WH":[
   ["誰が","wer"],
   ["誰を","wen"],
@@ -211,5 +279,20 @@ window.DRILL_DATA={
   ["どんな種類の〜","was für ein"],
   ["何時に","um wie viel Uhr"],
   ["どれ(何の中から)","welches"]
+ ],
+ "THEMES":[
+  {"id":"num1","title":"数字 0〜20","sub":"基数。11〜19 の綴りと 16・17 の変則を固める","kind":"numRange","from":0,"to":20,"parts":[{"table":"onesGrid"},"<ul><li>1 は単独では <b>eins</b>、語の前では <b>ein</b>(ein Uhr / einundzwanzig)</li><li><b>sechs → sechzehn</b>(s が落ちる)、<b>sieben → siebzehn</b>(en が落ちる)</li><li>12 は <b>zwölf</b>、11 は <b>elf</b>(-zehn 型ではない)</li><li>数詞は 1 語でつなげて書く</li></ul>"]},
+  {"id":"num2","title":"数字 20〜100","sub":"十の位と「一の位 + und + 十の位」の組み立て","kind":"numRange","from":20,"to":100,"parts":[{"table":"numWords","ns":[20,30,40,50,60,70,80,90,100]},"<ul><li>21〜99 は <b>一の位 + und + 十の位</b>。順序が日本語と逆(21 = einundzwanzig、「1 と 20」)</li><li>一の位の 1 は <b>ein</b>(einundzwanzig)</li><li>30 は <b>dreißig</b>(ß)、60 は <b>sechzig</b>(s が落ちる)、70 は <b>siebzig</b>(en が落ちる)</li><li>例: 47 = siebenundvierzig / 68 = achtundsechzig / 99 = neunundneunzig</li></ul>"]},
+  {"id":"num3","title":"数字 100 以上・年号","sub":"hundert・tausend の位と、年の読み方(1100〜1999 は hundert 読み)","kind":"numBig","write":[100,101,110,111,120,200,250,300,365,400,500,666,700,800,900,999,1000,1001,1500,2000,2500,5000,10000,100000],"writeTotal":44,"fillFrom":101,"fillTo":999,"read":[100,200,321,999,1000,2000,10000],"cards":[{"p":"1 000 000","pl":"ドイツ語で書く(名詞)","a":["eine Million"],"show":"eine Million","type":"de","dir":"w"},{"p":"eine Million","pl":"数字で答える","a":["1000000"],"show":"1000000","type":"num","dir":"r","say":1}],"years":[1066,1517,1789,1871,1914,1945,1989,1990,1999,2000,2011,2020,2026],"parts":[{"head":["数","語"],"rows":[["100","hundert / einhundert"],["101","hunderteins"],["200","zweihundert"],["365","dreihundertfünfundsechzig"],["1000","tausend / eintausend"],["2500","zweitausendfünfhundert"],["10000","zehntausend"],["100000","hunderttausend"],["1000000","eine Million(名詞・大文字)"]]},"<ul><li>百の位と十の位の間に <b>und は入れない</b>(123 = hundertdreiundzwanzig)</li><li>1 万・10 万は <b>zehntausend / hunderttausend</b>(万の単位はなく、千の何倍かで言う)</li></ul><h3>年号</h3>",{"head":["年","語"],"rows":[["1990","neunzehnhundertneunzig"],["1871","achtzehnhunderteinundsiebzig"],["2000","zweitausend"],["2026","zweitausendsechsundzwanzig"]]},"<ul><li><b>1100〜1999 年は「◯◯ hundert」読み</b>(19 hundert 90)</li><li><b>2000 年以降は通常の数字の読み</b>(zweitausend…)</li><li>「〜年に」は前置詞なしの <b>1990</b> か <b>im Jahr(e) 1990</b></li></ul>"]},
+  {"id":"ord","title":"序数・日付","sub":"1.〜31. の序数と、日付「am 3. Oktober」の 3 格語尾","kind":"ord","to":31,"big":[[100,"hundertste"],[1000,"tausendste"]],"dates":24,"parts":["<ul><li>数字 + <b>ピリオド</b> で序数を表す(3. = dritte)</li><li>〜19 は <b>基数 + te</b>、20 以上は <b>基数 + ste</b></li><li>不規則: <b>1. erste / 3. dritte / 7. siebte / 8. achte</b></li><li>序数は形容詞と同じ語尾がつく(der dritte / am dritten)</li></ul>",{"head":["形","例文"],"rows":[["1 格","Heute ist der dritte Oktober."],["4 格","Den Wievielten haben wir heute? — Den dritten Oktober."],["3 格(〜に)","Ich habe am dritten Oktober Geburtstag."]]},"<p>「○月○日に」は <b>am + 序数(3 格語尾 -n)+ 月名</b>。例: am ersten Mai / am zwanzigsten Juli</p>"]},
+  {"id":"time","title":"時刻の言い方","sub":"公式(24時間制)と日常(12時間制・halb / Viertel)","kind":"time","official":20,"informal":20,"parts":["<h3>公式(24 時間制)</h3><p>時 + <b>Uhr</b> + 分。<b>14:35 = vierzehn Uhr fünfunddreißig</b>(0:00 = null Uhr、1 時 = ein Uhr)</p><h3>日常(12 時間制)</h3>",{"head":["時刻","言い方(3 時台)"],"rows":[["3:00","drei Uhr"],["3:05","fünf nach drei"],["3:10","zehn nach drei"],["3:15","Viertel nach drei"],["3:20","zwanzig nach drei / zehn vor halb vier"],["3:25","fünf vor halb vier"],["3:30","<b>halb vier</b>"],["3:35","fünf nach halb vier"],["3:40","zwanzig vor vier / zehn nach halb vier"],["3:45","Viertel vor vier"],["3:50","zehn vor vier"],["3:55","fünf vor vier"]]},"<ul><li><b>halb は「次の時刻に向かって半分」</b>。halb vier = 3:30(4:30 ではない)</li><li>nach / vor の後は数字だけ。<b>「1」は eins</b>(fünf nach eins)、ただし Uhr の前は <b>ein Uhr</b></li><li>問い: <b>Wie spät ist es?</b> / <b>Wie viel Uhr ist es?</b>(今何時)、<b>Um wie viel Uhr …?</b>(何時に)</li><li>答え: <b>Es ist ...</b>(今 …)、<b>um ... Uhr</b>(… 時に)</li></ul>"]},
+  {"id":"cal","title":"曜日・月・季節・時間帯","sub":"名詞はすべて男性(Nacht だけ女性)。前置詞 am / im も一緒に","kind":"pairs","src":["DAYS","MONTHS","SEASONS","DAYPARTS","TIMEWORDS"],"parts":["<h3>曜日(すべて der / 男性)</h3>",{"table":"pairs","src":"DAYS"},"<h3>月(すべて der / 男性)</h3>",{"table":"monthsGrid"},"<h3>季節</h3>",{"table":"pairs","src":"SEASONS","prefix":"der "},"<h3>時間帯</h3>",{"table":"pairs","src":"DAYPARTS"},"<h3>副詞・前置詞句</h3>",{"table":"pairs","src":"TIMEWORDS"},"<ul><li>曜日・時間帯 → <b>am</b>(am Montag / am Abend)</li><li>月・季節 → <b>im</b>(im Mai / im Winter)</li><li>時刻 → <b>um</b>(um acht Uhr)</li><li>夜だけ <b>in der Nacht</b></li></ul>"]},
+  {"id":"greet","title":"挨拶・日常表現","sub":"あいさつ・お礼・自己紹介・聞き返しの定型句","kind":"pairs","src":["GREET"],"parts":[{"table":"pairs","src":"GREET"},"<ul><li>Sie は敬称(初対面・目上)、du は親称(友人・家族)。Wie geht es Ihnen? / Wie geht es dir?</li><li>入力は大文字小文字と文末の記号(. ! ?)を区別しません</li></ul>"]},
+  {"id":"art","title":"冠詞の格変化","sub":"定冠詞・ein・kein / mein・dieser 型(1 格・4 格・3 格・2 格)","kind":"art","parts":[{"table":"art"},"<ul><li>男性の 4 格だけ <b>-en</b>(den / einen / keinen / diesen)</li><li><b>女性・複数の 1 格と 4 格は同形</b>、中性も 1 格 = 4 格</li><li>3 格は m / n が <b>-em</b>、f が <b>-er</b>、複数が <b>-en</b>(名詞にも -n がつく)</li><li>2 格は m / n が <b>-(e)s</b>、f と複数が <b>-er</b>。mein・dein・sein・ihr・unser・euer・Ihr は kein と同じ変化</li><li>複数の ein は存在しない(無冠詞)</li></ul>"]},
+  {"id":"noun","title":"名詞の性(der / die / das)","sub":"基本名詞 45 語の冠詞と複数形。性は名詞と一緒に覚える","kind":"noun","parts":["<h3>der(男性)</h3>",{"table":"nouns","art":"der"},"<h3>die(女性)</h3>",{"table":"nouns","art":"die"},"<h3>das(中性)</h3>",{"table":"nouns","art":"das"},"<h3>性の見分け</h3><ul><li><b>die</b>: -ung / -heit / -keit / -schaft / -tion / -ei、-e で終わる語の多く</li><li><b>das</b>: -chen / -lein(縮小)、-ment / -um、動詞の名詞化(das Essen)</li><li><b>der</b>: 男性の人、曜日・月・季節、-er(職業)、-ling</li></ul>"]},
+  {"id":"pron","title":"人称代名詞・所有冠詞","sub":"ich・du・er … の 4 格・3 格と、mein・dein … の元の形","kind":"pron","parts":[{"table":"pers"},"<ul><li>er / sie / es は指す名詞の性で決まる(男性名詞 → er / ihn / ihm)</li><li>大文字 <b>Sie / Ihnen / Ihr</b> は敬称(あなた)。文中でも大文字</li><li><b>euer</b> は語尾がつくと e が落ちる(eure Mutter)。<b>unser</b> も unsre と書くことがある</li><li>所有冠詞は kein と同じ語尾(mein Vater / meinen Vater / meiner Mutter)</li></ul>"]},
+  {"id":"sein","title":"sein・haben・werden の現在変化","sub":"最重要の 3 動詞。不規則なので丸暗記","kind":"verbs","verbs":["sein","haben","werden"],"promptMeaning":false,"skipPersons":[],"parts":[{"table":"verbs","verbs":["sein","haben","werden"],"headMeaning":true},"<ul><li>sein は全く別の形。wir と sie / Sie は <b>sind</b>(3 つ同形)</li><li>haben は du <b>hast</b> / er <b>hat</b>(b が落ちる)</li><li>werden は du <b>wirst</b> / er <b>wird</b>(e→i と語尾)</li></ul>"]},
+  {"id":"modal","title":"話法の助動詞・wissen の現在変化","sub":"können・müssen・wollen・dürfen・sollen・mögen・wissen","kind":"verbs","verbs":["wissen","können","müssen","wollen","dürfen","sollen","mögen"],"promptMeaning":true,"skipPersons":[5],"parts":[{"table":"verbs","verbs":["wissen","können","müssen","wollen","dürfen","sollen","mögen"],"headMeaning":false},"<ul><li>単数(ich / er)は <b>語尾なし</b>で同形(ich kann / er kann)</li><li>幹母音が変わるのは単数だけ(können: kann / können、müssen: muss / müssen)</li><li>sollen だけは幹母音が変わらない(soll / sollst / soll)</li><li>wissen も単数で変化する(weiß / weißt / weiß)</li></ul>"]},
+  {"id":"wh","title":"疑問詞","sub":"wer・was・wo・wann・warum・wie … の基本と複合形","kind":"pairs","src":["WH"],"parts":[{"table":"pairs","src":"WH"},"<ul><li>wer の格変化: <b>wer</b>(1 格)/ <b>wen</b>(4 格)/ <b>wem</b>(3 格)/ <b>wessen</b>(2 格)</li><li>疑問詞は文頭に置き、<b>動詞は 2 番目</b>(Wo wohnen Sie?)</li><li>wo(場所)/ woher(出所)/ wohin(方向)を区別する</li></ul>"]}
  ]
 };
