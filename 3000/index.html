@@ -181,6 +181,11 @@
 const DATA = window.DRILL_DATA;
 if(!DATA){ document.body.innerHTML = "<p style='padding:24px'>出題データ data.js がありません。ビルドしてから開いてください。</p>"; throw new Error("data.js がありません"); }
 const CH = DATA.CH, VOCAB = DATA.VOCAB;
+/* 章の表示名「第n章: 章題」。章題はデータの title から先頭の「第n章」を外して使う */
+function chName(ch){
+  var t = String((CH[ch] && CH[ch].title) || "").replace(/^第\s*\d+\s*章\s*[:：]?\s*/, "");
+  return "第"+ch+"章" + (t ? ": "+t : "");
+}
 
 /* ============================================================
    問題プール
@@ -194,7 +199,7 @@ function buildPool(){
   });
   VOCAB.forEach(function(v,i){
     pool.push({id:"v"+i+"-de", ch:v.ch, sec:"語彙", q:v.de, sub:"意味は? ("+v.p+")",
-      a:[v.ja], hint:"第"+v.ch+"章の語", expl:"", grade:"self"});
+      a:[v.ja], hint:chName(v.ch)+" の語", expl:"", grade:"self"});
     if(!v.skip){
       pool.push({id:"v"+i+"-ja", ch:v.ch, sec:"語彙", q:v.ja, sub:"ドイツ語で? ("+v.p+")",
         a:[v.de], hint:v.de.charAt(0)+"…", expl:"", grade:"auto"});
@@ -310,7 +315,9 @@ function chipHtml(list, sel){
   }).join(" ");
 }
 function renderSetup(){
-  $("chChips").innerHTML  = chipHtml(CHS.map(function(c){return "第"+c+"章";}), store.chs.map(function(c){return "第"+c+"章";}));
+  $("chChips").innerHTML  = CHS.map(function(c){
+    return '<span class="chip'+(store.chs.indexOf(c)>=0?' on':'')+'" data-ch="'+c+'">'+esc(chName(c))+'</span>';
+  }).join(" ");
   $("secChips").innerHTML = chipHtml(SECS, store.secs);
   ["shuffle","onlyWrong","strict"].forEach(function(id){
     $(id).classList.toggle("on", !!store[id]);
@@ -330,7 +337,7 @@ function updateCount(){
 }
 $("chChips").addEventListener("click", function(e){
   var c = e.target.closest(".chip"); if(!c) return;
-  var ch = +c.dataset.v.replace(/[^0-9]/g,"");
+  var ch = +c.dataset.ch;
   var i = store.chs.indexOf(ch);
   if(i>=0) store.chs.splice(i,1); else store.chs.push(ch);
   c.classList.toggle("on"); save(); updateCount();
@@ -365,7 +372,7 @@ function show(){
   if(idx >= queue.length) return finish();
   var it = queue[idx];
   graded = false; curSelf = (it.grade === "self");
-  $("qtag").textContent = "第"+it.ch+"章 / "+it.sec;
+  $("qtag").textContent = chName(it.ch)+" / "+it.sec;
   $("qpos").textContent = (idx+1)+" / "+queue.length;
   $("qtext").innerHTML = it.q;
   $("qsub").innerHTML = it.sub || "";
