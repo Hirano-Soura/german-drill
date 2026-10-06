@@ -72,6 +72,12 @@
   .fb.ng{background:rgba(229,73,63,.12);border:1px solid var(--ng)}
   .fb .ans-show{font-family:var(--mono);font-size:18px;font-weight:600;word-break:break-word}
   .fb .mine{font-size:13px;color:var(--fg2);margin-top:2px}
+  .fb .ex{font-size:13px;color:var(--fg2);margin-top:4px;padding-top:4px;border-top:1px dashed var(--line)}
+  .fb .ex.de{font-family:var(--mono);color:var(--fg)}
+  .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+  .choices .btn{font-size:17px;font-weight:600}
+  .choices .btn small{font-weight:400;font-size:12px;color:var(--fg3)}
+  .choices .btn.ok,.choices .btn.ng{background:var(--bg2)}
   .big{font-size:34px;font-weight:700;color:var(--ac)}
   .wr{font-size:13px;border-bottom:1px solid var(--line);padding:6px 0}
   .wr:last-child{border:none}
@@ -83,7 +89,7 @@
 
 <section id="home">
   <h1>ドイツ語 基礎暗記ドリル</h1>
-  <p class="sub">数字・冠詞・時刻・挨拶など、暗記が必要な基礎をテーマ別に復習します。<br>
+  <p class="sub">数字・冠詞・前置詞・時刻・挨拶など、暗記が必要な基礎をテーマ別に復習します。<br>
   <span class="de">a:</span>→ä、<span class="de">o:</span>→ö、<span class="de">u:</span>→ü と打てます(下のボタンでも入力可)。</p>
   <div id="decklist"></div>
 </section>
@@ -96,6 +102,7 @@
     <h2>練習の設定</h2>
     <div class="row" id="rowCount"><span class="lbl">出題数</span></div>
     <div class="row hidden" id="rowDir"><span class="lbl">向き</span></div>
+    <div class="row hidden" id="rowGroup"><span class="lbl">範囲</span></div>
     <div class="row"><span class="lbl">音声</span><button class="chip" id="autoSpeak">自動読み上げ:切</button></div>
     <div class="row">
       <button class="btn primary" id="startBtn">はじめる</button>
@@ -119,6 +126,7 @@
       </div>
       <button class="btn primary block" id="checkBtn">答え合わせ</button>
     </div>
+    <div id="choiceArea" class="choices hidden"></div>
     <div id="flipArea" class="hidden">
       <button class="btn primary block" id="showBtn">答えを見る</button>
     </div>
@@ -150,7 +158,7 @@
 
 </div>
 
-<script src="data.js?v=00405bbef2"></script>
+<script src="data.js?v=189d31041f"></script>
 <script>
 'use strict';
 /* ================= 共通 ================= */
@@ -165,7 +173,7 @@ const tbl=(h,rows)=>'<table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+ro
    画面が持つのは、データからカードと一覧表を組み立てる手続きだけ(ルール LC-9) */
 if(!window.DRILL_DATA){ document.body.innerHTML = "<p style='padding:24px'>出題データ data.js がありません。ビルドしてから開いてください。</p>"; throw new Error("data.js がありません"); }
 const D=window.DRILL_DATA;
-const {ONES,TENS,ORD_IRREG,MONTHS,TIME_INFORMAL,ART,NOUNS,PERS,PRON,VERBS,VJA,THEMES}=window.DRILL_DATA;
+const {ONES,TENS,ORD_IRREG,MONTHS,TIME_INFORMAL,ART,NOUNS,PERS,PRON,VERBS,VJA,PREP,PREP_USE,PREP_FUS,THEMES}=window.DRILL_DATA;
 
 /* ================= 数詞(組み立て規則) ================= */
 function numAll(n){
@@ -286,6 +294,26 @@ const GEN={
     });
     return o;
   },
+  /* 前置詞: 格を選ぶ(case)・3/4 格を選ぶ(use)・融合形を書く(fus)・意味から前置詞を書く(mean)。g が出題範囲 */
+  prep(t){
+    const o=[],cs=t.cases;
+    for(const [pr,k,ja,exDe,exJa,note,ch,alt] of PREP){
+      const ex=[{t:ja},{t:exDe+'('+exJa+')',de:1}];
+      if(note) ex.push({t:note});
+      if(!ch) ex.push({t:'教材外(練習問題3000題 第 5 章の表にない頻出語)'});
+      o.push({p:pr,pl:'格支配は?',type:'choice',ch:t.choices,a:[k],show:pr+' — '+cs[k]+'支配',ex,tts:pr,dir:'c',g:'case'});
+      o.push({p:ja,pl:'前置詞を書く',a:[pr,...(alt||[])],show:pr+'('+cs[k]+'支配)',ex:ex.slice(1),type:'de',dir:'w',g:'mean'});
+    }
+    for(const [sent,ja,k,form,why] of PREP_USE){
+      const full=sent.replace('___',form);
+      o.push({p:sent+'\n('+ja+')',pl:'空欄は 3 格? 4 格?',type:'choice',ch:t.choices.filter(c=>c[0]==='3'||c[0]==='4'),a:[k],show:cs[k]+' — '+full,ex:[{t:why}],tts:full,dir:'c',g:'use'});
+    }
+    for(const [src,fu,note] of PREP_FUS){
+      o.push({p:src,pl:'融合形を書く',a:[fu],show:fu,ex:[{t:note}],type:'de',dir:'w',g:'fus'});
+      o.push({p:fu,pl:'元の形(前置詞 + 定冠詞)を書く',a:[src],show:src,ex:[{t:note}],type:'de',dir:'w',g:'fus'});
+    }
+    return o;
+  },
 };
 
 /* ================= 一覧表のうち、データから計算して作るもの(parts の {table:種類} で引く) ================= */
@@ -305,19 +333,21 @@ const REF={
   nouns(p){return tbl(['単数','意味','複数'],NOUNS.filter(x=>x[0]===p.art).map(x=>[p.art+' '+x[1],esc(x[2]),esc(x[3])]));},
   pers(){return tbl(['','1 格','4 格','3 格','所有冠詞'],PERS.map(x=>[esc(x[0]),x[1],x[2],x[3],x[4]]));},
   verbs(p){return tbl([''].concat(p.verbs.map(v=>p.headMeaning?v+'('+VJA[v]+')':v)),PRON.map((pr,i)=>[pr].concat(p.verbs.map(v=>VERBS[v][i]))));},
+  prep(p){return tbl(['前置詞','例','意味'],PREP.filter(x=>x[1]===p.case).map(x=>[esc(x[0])+(x[6]?'':'<br><small>教材外</small>'),esc(x[3]).replace(/ \/ /g,'<br>'),esc(x[2])]));},
+  prepFus(){return tbl(['元の形','融合形','補足'],PREP_FUS.map(x=>[esc(x[0]),esc(x[1]),esc(x[2])]));},
 };
 /* parts の 1 つ: 文字列 = そのまま html / {head, rows} = 固定の表 / {table} = REF で計算する表 */
 const part=p=>typeof p==='string'?p:p.table?REF[p.table](p):tbl(p.head,p.rows);
 
 /* ================= テーマ ================= */
-const DECKS=THEMES.map(t=>({id:t.id,title:t.title,sub:t.sub,gen:()=>GEN[t.kind](t),ref:()=>t.parts.map(part).join('')}));
+const DECKS=THEMES.map(t=>({id:t.id,title:t.title,sub:t.sub,groups:t.groups||null,gen:()=>GEN[t.kind](t),ref:()=>t.parts.map(part).join('')}));
 
 /* ================= 状態 ================= */
 const STORE_KEY='de-kiso-drill-v1';
 let store={};
 try{store=JSON.parse(localStorage.getItem(STORE_KEY)||'{}')||{};}catch(e){store={};}
 const saveStore=()=>{try{localStorage.setItem(STORE_KEY,JSON.stringify(store));}catch(e){}};
-const opt={count:20,dir:'both',speak:false};
+const opt={count:20,dir:'both',speak:false,group:'all',groupDeck:null};
 let cur=null; // 現在のテーマ
 let S=null;   // セッション
 let lastCards=null;
@@ -357,6 +387,12 @@ function openDeck(d){
   $('#rowDir').classList.toggle('hidden',!hasDirs);
   if(!hasDirs) opt.dir='both';
   else chips('#rowDir',['w','r','both'],'dir',v=>({w:'書く(独語を入力)',r:'読む(意味を答える)',both:'両方'})[v]);
+  $('#rowGroup').classList.toggle('hidden',!d.groups);
+  if(d.groups){
+    if(opt.groupDeck!==d.id){opt.group=d.groups[0][0];opt.groupDeck=d.id;}
+    const gl=Object.fromEntries(d.groups);gl.all='全部';
+    chips('#rowGroup',d.groups.map(g=>g[0]).concat('all'),'group',v=>gl[v]);
+  }
   $('#autoSpeak').textContent='自動読み上げ:'+(opt.speak?'入':'切');
   const w=(store[d.id]&&store[d.id].wrong)||[];
   $('#retryStored').classList.toggle('hidden',!w.length);
@@ -366,13 +402,15 @@ function openDeck(d){
 }
 $('#deckBack').onclick=renderHome;
 $('#autoSpeak').onclick=()=>{opt.speak=!opt.speak;$('#autoSpeak').textContent='自動読み上げ:'+(opt.speak?'入':'切');};
-$('#startBtn').onclick=()=>{
+function pickCards(){
   let cards=cur.gen();
   if(opt.dir!=='both') cards=cards.filter(c=>opt.dir==='w'?c.dir!=='r':c.dir==='r');
+  if(cur.groups&&opt.group!=='all') cards=cards.filter(c=>c.g===opt.group);
   cards=shuffle(cards);
   if(opt.count) cards=cards.slice(0,opt.count);
-  startSession(cards);
-};
+  return cards;
+}
+$('#startBtn').onclick=()=>startSession(pickCards());
 $('#retryStored').onclick=()=>startSession(shuffle(store[cur.id].wrong));
 
 /* ================= 出題 ================= */
@@ -390,7 +428,7 @@ function speak(t){
     speechSynthesis.cancel();speechSynthesis.speak(u);
   }catch(e){}
 }
-const speakText=c=>(c.dir==='r'||c.dir==='r2')?c.p:(c.type==='ja'?null:c.show.split('  (')[0].split(' / ')[0]);
+const speakText=c=>c.tts?c.tts:(c.dir==='r'||c.dir==='r2')?c.p:(c.type==='ja'?null:c.show.split('  (')[0].split(' / ')[0]);
 function ask(){
   const c=S.cards[S.i];S.phase='ask';
   $('#qNo').textContent=(S.i+1)+' / '+S.cards.length;
@@ -400,9 +438,17 @@ function ask(){
   const pr=$('#qPrompt');pr.textContent=c.p;pr.style.whiteSpace='pre-line';
   pr.classList.toggle('de',c.dir==='r'||c.dir==='r2');
   $('#fb').classList.add('hidden');$('#selfArea').classList.add('hidden');$('#nextBtn').classList.add('hidden');
-  const typed=c.type!=='ja';
+  const choice=c.type==='choice',typed=c.type!=='ja'&&!choice;
   $('#typeArea').classList.toggle('hidden',!typed);
-  $('#flipArea').classList.toggle('hidden',typed);
+  $('#flipArea').classList.toggle('hidden',c.type!=='ja');
+  $('#choiceArea').classList.toggle('hidden',!choice);
+  $('#choiceArea').innerHTML='';
+  if(choice) c.ch.forEach(([v,l,k])=>{
+    const b=document.createElement('button');b.className='btn';b.dataset.v=v;b.dataset.k=k;
+    b.innerHTML=esc(l)+' <small>('+esc(k)+')</small>';
+    b.onclick=()=>pickChoice(v);
+    $('#choiceArea').appendChild(b);
+  });
   const hearBefore=(c.dir==='r'||c.dir==='r2');
   $('#speakBtn').classList.toggle('hidden',!hearBefore);
   if(hearBefore&&opt.speak) speak(c.p);
@@ -426,6 +472,20 @@ function judge(c,raw){
   if(alts.map(ss).includes(ss(u))) return {ok:true,note:'ß の綴りに注意: '+c.show};
   return {ok:false};
 }
+/* 補足(ex)。カードの ex は {t:文, de:独語なら 1} の並び */
+const exHtml=c=>(c.ex||[]).map(x=>'<div class="ex'+(x.de?' de':'')+'">'+esc(x.t)+'</div>').join('');
+function pickChoice(v){
+  if(!S||S.phase!=='ask') return;
+  const c=S.cards[S.i],ok=c.a.includes(v),lab=c.ch.find(x=>x[0]===v)[1];
+  $('#choiceArea').querySelectorAll('button').forEach(b=>{
+    b.disabled=true;
+    if(c.a.includes(b.dataset.v)) b.classList.add('ok'); else if(b.dataset.v===v) b.classList.add('ng');
+  });
+  const fb=$('#fb');fb.className='fb '+(ok?'ok':'ng');fb.classList.remove('hidden');
+  fb.innerHTML=(ok?'<b>正解</b>':'<b>不正解</b>')+'<div class="ans-show">'+esc(c.show)+'</div>'+
+    (!ok?'<div class="mine">あなたの答え: '+esc(lab)+'</div>':'')+exHtml(c);
+  finish(ok,c,lab);
+}
 function finish(ok,c,mine){
   S.phase='fb';
   if(ok) S.ok++; else S.wrong.push(c);
@@ -443,7 +503,7 @@ $('#checkBtn').onclick=()=>{
   const r=judge(c,raw);
   const fb=$('#fb');fb.className='fb '+(r.ok?'ok':'ng');fb.classList.remove('hidden');
   fb.innerHTML=(r.ok?'<b>正解</b>':'<b>不正解</b>')+'<div class="ans-show">'+esc(c.show)+'</div>'+
-    (r.note?'<div class="mine">'+esc(r.note)+'</div>':'')+(!r.ok?'<div class="mine">あなたの答え: '+esc(conv(raw))+'</div>':'');
+    (r.note?'<div class="mine">'+esc(r.note)+'</div>':'')+(!r.ok?'<div class="mine">あなたの答え: '+esc(conv(raw))+'</div>':'')+exHtml(c);
   $('#ans').disabled=true;
   $('#typeArea').querySelector('.keys').classList.add('hidden');
   $('#checkBtn').classList.add('hidden');
@@ -453,7 +513,7 @@ $('#showBtn').onclick=()=>{
   if(S.phase!=='ask') return;
   const c=S.cards[S.i];
   const fb=$('#fb');fb.className='fb';fb.classList.remove('hidden');
-  fb.innerHTML='<div class="ans-show">'+esc(c.show)+'</div>';
+  fb.innerHTML='<div class="ans-show">'+esc(c.show)+'</div>'+exHtml(c);
   $('#flipArea').classList.add('hidden');$('#selfArea').classList.remove('hidden');
   S.phase='self';
   if(opt.speak&&(c.dir==='r'||c.dir==='r2')) speak(c.p);
@@ -492,6 +552,13 @@ document.querySelectorAll('.keys button').forEach(b=>{
 });
 document.addEventListener('keydown',e=>{
   if($('#quiz').classList.contains('hidden')||!S) return;
+  const c=S.cards[S.i];
+  if(S.phase==='ask'&&c&&c.type==='choice'){
+    const b=[...$('#choiceArea').querySelectorAll('button')].find(x=>x.dataset.k===e.key);
+    if(b){e.preventDefault();b.click();}
+    else if(e.key==='Enter') e.preventDefault();
+    return;
+  }
   if(e.key==='Enter'){
     e.preventDefault();
     if(S.phase==='ask'){ if(!$('#typeArea').classList.contains('hidden')) $('#checkBtn').click(); else $('#showBtn').click(); }
@@ -512,12 +579,7 @@ function showResult(){
   show('result');
 }
 $('#rWrong').onclick=()=>startSession(shuffle(S.wrong));
-$('#rAgain').onclick=()=>{
-  let cards=cur.gen();
-  if(opt.dir!=='both') cards=cards.filter(c=>opt.dir==='w'?c.dir!=='r':c.dir==='r');
-  cards=shuffle(cards);if(opt.count)cards=cards.slice(0,opt.count);
-  startSession(cards);
-};
+$('#rAgain').onclick=()=>startSession(pickCards());
 $('#rHome').onclick=renderHome;
 
 renderHome();
