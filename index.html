@@ -158,7 +158,7 @@
 
 </div>
 
-<script src="data.js?v=448f5a7153"></script>
+<script src="data.js?v=f1ab82cdd8"></script>
 <script>
 'use strict';
 /* ================= 共通 ================= */
@@ -228,6 +228,18 @@ function pairCards(pairs){
 }
 function pairRef(pairs,h1,h2){return tbl([h1,h2],pairs.map(x=>[esc(x[0]),esc(x[1])]));}
 
+/* ================= 冠詞類(組み立て規則) ================= */
+/* 使える性・数(jeder・ein は単数だけ、aller は複数だけ) */
+const artwGs=w=>w.num==='sg'?['m','f','n']:w.num==='pl'?['p']:['m','f','n','p'];
+/* 語幹 + 語尾。ci は 0:1 格 1:4 格 2:3 格 3:2 格(ART と同じ並び)。st2 = 語尾がつくときの語幹(euer → eur)、alt = 別の綴りの語幹(unsr) */
+function artwForms(t,w,g,ci){
+  const e=t.endings[w.t][g][ci];
+  if(!e) return [w.st];
+  return [w.st2||w.st].concat(w.alt?[w.alt]:[]).map(x=>x+e);
+}
+/* 名詞の形: 複数 3 格は d3、男性・中性 2 格は g2(別の形も正解にする) */
+const artwNoun=(nn,g,ci)=>g==='p'?[ci===2?nn.d3:nn.pl]:(ci===3&&nn.g2)?nn.g2:[nn.n];
+
 /* ================= テーマの種類ごとのカード生成(テーマは THEMES の kind で引く) ================= */
 const GEN={
   numRange(t){const o=[];for(let n=t.from;n<=t.to;n++){
@@ -267,6 +279,29 @@ const GEN={
       });
     }
     return out;
+  },
+  /* 冠詞類: 語尾をつける(end)・日本語から句を作る(ja)・型を見分ける(type)。語尾・語・名詞は t が持つ */
+  artw(t){
+    const o=[],cl=t.cases,gn=Object.fromEntries(t.genders.map(x=>[x[0],x]));
+    const pickN=g=>{const ns=t.nouns.filter(x=>g==='p'||x.g===g);return ns[rnd(0,ns.length-1)];};
+    for(const w of t.words){
+      const gs=artwGs(w),tn=t.types[w.t];
+      for(const g of gs) for(let ci=0;ci<4;ci++){
+        const nn=pickN(g),f=artwForms(t,w,g,ci);
+        const ex=[{t:cl[ci][0]+' ・ '+gn[g][1]+' ・ '+tn}];if(w.note) ex.push({t:w.note});
+        o.push({p:w.st+'__ '+(g==='p'?nn.pl:nn.n)+' ('+gn[g][2]+')\n'+cl[ci][0],pl:'冠詞類を格の形で書く(語尾がなければそのまま)',a:f,show:f[0]+' '+artwNoun(nn,g,ci)[0],ex,type:'de',dir:'w',g:'end'});
+      }
+      const combos=shuffle(gs.flatMap(g=>[0,1,2,3].map(ci=>[g,ci]))).slice(0,t.jaPerWord);
+      for(const [g,ci] of combos){
+        const nn=pickN(g),f=artwForms(t,w,g,ci),nf=artwNoun(nn,g,ci),lb=g==='p'?w.jp:w.ja;
+        const ex=[{t:cl[ci][1]+' = '+cl[ci][0]+' ・ '+gn[g][1]+' ・ '+w.w+'('+tn+')'}];if(w.note) ex.push({t:w.note});
+        o.push({p:lb+(lb.endsWith('+')?' ':'')+nn.ja+(g==='p'?'(複数)':'')+cl[ci][1],pl:'冠詞類 + 名詞で書く(格に合わせる)',a:f.flatMap(x=>nf.map(y=>x+' '+y)),show:f[0]+' '+nf[0],ex,type:'de',dir:'w',g:'ja'});
+      }
+      const m1=artwForms(t,w,'m',0)[0],n1=artwForms(t,w,'n',0)[0];
+      const ex=[{t:'男性 1 格 '+m1+' ・ 中性 1・4 格 '+n1+(w.t==='e'?'(語尾が欠ける)':'(語尾 -er / -es がつく)')}];if(w.note) ex.push({t:w.note});
+      o.push({p:w.w,pl:'dieser 型? mein 型?',type:'choice',ch:t.choices,a:[w.t],show:w.w+' — '+tn,ex,tts:w.w,dir:'c',g:'type'});
+    }
+    return o;
   },
   noun(){
     const o=[];
@@ -330,17 +365,26 @@ const REF={
     }
     return h;
   },
+  artwWords(p,t){return tbl(['型','語','意味'],t.words.map(w=>[t.types[w.t],esc(w.w),esc(w.mean||w.ja||w.jp)]));},
+  artwEnd(p,t){
+    let h='';
+    for(const [k,st] of [['d','dies'],['e','mein']]){
+      const cell=(g,ci)=>{const e=t.endings[k][g][ci],diff=e!==t.endings[k==='d'?'e':'d'][g][ci];const x=st+(e?'<b>'+e+'</b>':'<b>—</b>');return diff?'<u>'+x+'</u>':x;};
+      h+='<h3>'+t.types[k]+'('+st+(k==='d'?'er':'')+')</h3>'+tbl(['','男性','女性','中性','複数'],[0,1,2,3].map(ci=>[t.cases[ci][0]].concat(['m','f','n','p'].map(g=>cell(g,ci)))));
+    }
+    return h+'<p>下線 = 2 つの型で語尾が違う 3 か所(— は語尾なし)</p>';
+  },
   nouns(p){return tbl(['単数','意味','複数'],NOUNS.filter(x=>x[0]===p.art).map(x=>[p.art+' '+x[1],esc(x[2]),esc(x[3])]));},
   pers(){return tbl(['','1 格','4 格','3 格','所有冠詞'],PERS.map(x=>[esc(x[0]),x[1],x[2],x[3],x[4]]));},
   verbs(p){return tbl([''].concat(p.verbs.map(v=>p.headMeaning?v+'('+VJA[v]+')':v)),PRON.map((pr,i)=>[pr].concat(p.verbs.map(v=>VERBS[v][i]))));},
   prep(p){return tbl(['前置詞','例','意味'],PREP.filter(x=>x[1]===p.case).map(x=>[esc(x[0])+(x[6]?'':'<br><small>教材外</small>'),esc(x[3]).replace(/ \/ /g,'<br>'),esc(x[2])]));},
   prepFus(){return tbl(['元の形','融合形','補足'],PREP_FUS.map(x=>[esc(x[0]),esc(x[1]),esc(x[2])]));},
 };
-/* parts の 1 つ: 文字列 = そのまま html / {head, rows} = 固定の表 / {table} = REF で計算する表 */
-const part=p=>typeof p==='string'?p:p.table?REF[p.table](p):tbl(p.head,p.rows);
+/* parts の 1 つ: 文字列 = そのまま html / {head, rows} = 固定の表 / {table} = REF で計算する表(REF にはテーマ t も渡す) */
+const part=(p,t)=>typeof p==='string'?p:p.table?REF[p.table](p,t):tbl(p.head,p.rows);
 
 /* ================= テーマ ================= */
-const DECKS=THEMES.map(t=>({id:t.id,title:t.title,sub:t.sub,groups:t.groups||null,gen:()=>GEN[t.kind](t),ref:()=>t.parts.map(part).join('')}));
+const DECKS=THEMES.map(t=>({id:t.id,title:t.title,sub:t.sub,groups:t.groups||null,gen:()=>GEN[t.kind](t),ref:()=>t.parts.map(p=>part(p,t)).join('')}));
 
 /* ================= 状態 ================= */
 const STORE_KEY='de-kiso-drill-v1';
