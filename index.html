@@ -158,7 +158,7 @@
 
 </div>
 
-<script src="data.js?v=f1ab82cdd8"></script>
+<script src="data.js?v=0813dae9ee"></script>
 <script>
 'use strict';
 /* ================= 共通 ================= */
@@ -240,6 +240,12 @@ function artwForms(t,w,g,ci){
 /* 名詞の形: 複数 3 格は d3、男性・中性 2 格は g2(別の形も正解にする) */
 const artwNoun=(nn,g,ci)=>g==='p'?[ci===2?nn.d3:nn.pl]:(ci===3&&nn.g2)?nn.g2:[nn.n];
 
+/* ================= 3 基本形(過去形・過去分詞) ================= */
+/* 型: w 弱変化 / m 混合 / x 個別に覚える / それ以外(類の番号)は強変化 s */
+const stemKind=v=>'wmx'.includes(v.c)?v.c:'s';
+/* 完了形(er の形): auxes[aux] = [不定詞, er の形] */
+const stemPerf=(t,v)=>'er '+t.auxes[v.aux][1]+' '+v.pp;
+
 /* ================= テーマの種類ごとのカード生成(テーマは THEMES の kind で引く) ================= */
 const GEN={
   numRange(t){const o=[];for(let n=t.from;n<=t.to;n++){
@@ -301,6 +307,25 @@ const GEN={
       const ex=[{t:'男性 1 格 '+m1+' ・ 中性 1・4 格 '+n1+(w.t==='e'?'(語尾が欠ける)':'(語尾 -er / -es がつく)')}];if(w.note) ex.push({t:w.note});
       o.push({p:w.w,pl:'dieser 型? mein 型?',type:'choice',ch:t.choices,a:[w.t],show:w.w+' — '+tn,ex,tts:w.w,dir:'c',g:'type'});
     }
+    return o;
+  },
+  /* 3 基本形: 過去分詞(pp)・過去形(prt)を書く、型(kind)・類(cls)を選ぶ、現在形 er(pres)、完了の助動詞(aux)、規則(rule)。動詞・類・規則は t が持つ */
+  stem(t){
+    const o=[];
+    for(const v of t.verbs){
+      const k=stemKind(v),cl=t.classes[v.c],three=v.v+' – '+v.prt+' – '+v.pp;
+      const ex=[{t:cl?'強変化 第 '+cl[0]+' 類('+cl[1]+')':t.kinds[k]}];if(v.note) ex.push({t:v.note});
+      const head=v.v+'('+v.ja+')\n';
+      o.push({p:head+'過去分詞',pl:'過去分詞を書く',a:[v.pp],show:v.pp+'  ('+three+')',ex:ex.concat([{t:'完了: '+stemPerf(t,v)}]),type:'de',dir:'w',g:'pp'});
+      o.push({p:head+'過去基本形',pl:'過去形(ich / er)を書く',a:[v.prt],show:v.prt+'  ('+three+')',ex,type:'de',dir:'w',g:'prt'});
+      o.push({p:v.v,pl:'弱変化・混合・強変化のどれ?',type:'choice',ch:t.kindChoices,a:[k],show:three+' — '+t.kinds[k],ex:cl?ex:ex.slice(1),tts:three,dir:'c',g:'kind'});
+      if(cl){
+        o.push({p:v.v,pl:'強変化の第何類?',type:'choice',ch:t.clsChoices,a:[cl[0]],show:three+' — 第 '+cl[0]+' 類',ex:[{t:cl[1]}].concat(v.note?[{t:v.note}]:[]),tts:three,dir:'c',g:'cls'});
+        if(v.er) o.push({p:v.v+'('+v.ja+')\ner',pl:'現在形を書く(er)',a:[v.er],show:'er '+v.er,ex:[{t:'第 '+cl[0]+' 類: 現在形の母音は '+cl[2]}].concat(v.note?[{t:v.note}]:[]),type:'de',dir:'w',g:'pres'});
+      }
+      o.push({p:v.v+'('+v.ja+')',pl:'完了の助動詞を選ぶ',type:'choice',ch:t.auxChoices,a:[v.aux],show:stemPerf(t,v)+' — '+t.auxes[v.aux][0],ex:[{t:v.auxNote||t.auxRule}],tts:v.aux==='hs'?v.v:stemPerf(t,v),dir:'c',g:'aux'});
+    }
+    for(const [q,a] of t.rules) o.push({p:q,pl:'規則を思い出す',show:a,type:'ja',dir:'c',g:'rule'});
     return o;
   },
   noun(){
@@ -373,6 +398,19 @@ const REF={
       h+='<h3>'+t.types[k]+'('+st+(k==='d'?'er':'')+')</h3>'+tbl(['','男性','女性','中性','複数'],[0,1,2,3].map(ci=>[t.cases[ci][0]].concat(['m','f','n','p'].map(g=>cell(g,ci)))));
     }
     return h+'<p>下線 = 2 つの型で語尾が違う 3 か所(— は語尾なし)</p>';
+  },
+  stemCls(p,t){
+    const rows=[];
+    for(const [c,cl] of Object.entries(t.classes).sort((x,y)=>x[0].localeCompare(y[0]))){ /* 数字だけのキー(2, 4 …)が先に並ぶので並べ直す */
+      const ex=t.verbs.filter(v=>v.c===c).slice(0,3).map(v=>esc(v.v+' – '+v.prt+' – '+v.pp)).join('<br>');
+      rows.push([cl[0],esc(cl[1]),ex]);
+    }
+    return tbl(['類','母音','例'],rows);
+  },
+  stemList(p,t){
+    const vs=t.verbs.filter(v=>p.c.includes(v.c));
+    const h=['不定詞','過去','過去分詞','完了'].concat(p.er?['er(現在)','類']:[]);
+    return tbl(h,vs.map(v=>[esc(v.v)+'<br><small>'+esc(v.ja)+'</small>',esc(v.prt),esc(v.pp),esc(t.auxes[v.aux][0])].concat(p.er?[esc(v.er||''),t.classes[v.c][0]]:[])));
   },
   nouns(p){return tbl(['単数','意味','複数'],NOUNS.filter(x=>x[0]===p.art).map(x=>[p.art+' '+x[1],esc(x[2]),esc(x[3])]));},
   pers(){return tbl(['','1 格','4 格','3 格','所有冠詞'],PERS.map(x=>[esc(x[0]),x[1],x[2],x[3],x[4]]));},
