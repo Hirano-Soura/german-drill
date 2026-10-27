@@ -158,7 +158,7 @@
 
 </div>
 
-<script src="data.js?v=0813dae9ee"></script>
+<script src="data.js?v=fddfb94963"></script>
 <script>
 'use strict';
 /* ================= 共通 ================= */
@@ -231,6 +231,8 @@ function pairRef(pairs,h1,h2){return tbl([h1,h2],pairs.map(x=>[esc(x[0]),esc(x[1
 /* ================= 冠詞類(組み立て規則) ================= */
 /* 使える性・数(jeder・ein は単数だけ、aller は複数だけ) */
 const artwGs=w=>w.num==='sg'?['m','f','n']:w.num==='pl'?['p']:['m','f','n','p'];
+/* 表に出す格の順(1・2・3・4 格)→ データの添字。データ(ART・endings・cases)は 1・4・3・2 格の並び */
+const CASE_SHOW=[0,3,2,1];
 /* 語幹 + 語尾。ci は 0:1 格 1:4 格 2:3 格 3:2 格(ART と同じ並び)。st2 = 語尾がつくときの語幹(euer → eur)、alt = 別の綴りの語幹(unsr) */
 function artwForms(t,w,g,ci){
   const e=t.endings[w.t][g][ci];
@@ -239,6 +241,8 @@ function artwForms(t,w,g,ci){
 }
 /* 名詞の形: 複数 3 格は d3、男性・中性 2 格は g2(別の形も正解にする) */
 const artwNoun=(nn,g,ci)=>g==='p'?[ci===2?nn.d3:nn.pl]:(ci===3&&nn.g2)?nn.g2:[nn.n];
+/* 問題文に添える冠詞類の訳語: 意味(mean)があればそれ、無ければ単数・複数の訳(ja / jp) */
+const artwJa=(w,g)=>w.mean||(g==='p'?w.jp:w.ja);
 
 /* ================= 3 基本形(過去形・過去分詞) ================= */
 /* 型: w 弱変化 / m 混合 / x 個別に覚える / それ以外(類の番号)は強変化 s */
@@ -295,7 +299,7 @@ const GEN={
       for(const g of gs) for(let ci=0;ci<4;ci++){
         const nn=pickN(g),f=artwForms(t,w,g,ci);
         const ex=[{t:cl[ci][0]+' ・ '+gn[g][1]+' ・ '+tn}];if(w.note) ex.push({t:w.note});
-        o.push({p:w.st+'__ '+(g==='p'?nn.pl:nn.n)+' ('+gn[g][2]+')\n'+cl[ci][0],pl:'冠詞類を格の形で書く(語尾がなければそのまま)',a:f,show:f[0]+' '+artwNoun(nn,g,ci)[0],ex,type:'de',dir:'w',g:'end'});
+        o.push({p:w.st+'__('+artwJa(w,g)+') '+(g==='p'?nn.pl:nn.n)+'('+nn.ja+') ('+gn[g][2]+')\n'+cl[ci][0],pl:'冠詞類を格の形で書く(語尾がなければそのまま)',a:f,show:f[0]+' '+artwNoun(nn,g,ci)[0],ex,type:'de',dir:'w',g:'end'});
       }
       const combos=shuffle(gs.flatMap(g=>[0,1,2,3].map(ci=>[g,ci]))).slice(0,t.jaPerWord);
       for(const [g,ci] of combos){
@@ -305,7 +309,7 @@ const GEN={
       }
       const m1=artwForms(t,w,'m',0)[0],n1=artwForms(t,w,'n',0)[0];
       const ex=[{t:'男性 1 格 '+m1+' ・ 中性 1・4 格 '+n1+(w.t==='e'?'(語尾が欠ける)':'(語尾 -er / -es がつく)')}];if(w.note) ex.push({t:w.note});
-      o.push({p:w.w,pl:'dieser 型? mein 型?',type:'choice',ch:t.choices,a:[w.t],show:w.w+' — '+tn,ex,tts:w.w,dir:'c',g:'type'});
+      o.push({p:w.w+'('+artwJa(w,gs[0])+')',pl:'dieser 型? mein 型?',type:'choice',ch:t.choices,a:[w.t],show:w.w+' — '+tn,ex,tts:w.w,dir:'c',g:'type'});
     }
     return o;
   },
@@ -318,12 +322,39 @@ const GEN={
       const head=v.v+'('+v.ja+')\n';
       o.push({p:head+'過去分詞',pl:'過去分詞を書く',a:[v.pp],show:v.pp+'  ('+three+')',ex:ex.concat([{t:'完了: '+stemPerf(t,v)}]),type:'de',dir:'w',g:'pp'});
       o.push({p:head+'過去基本形',pl:'過去形(ich / er)を書く',a:[v.prt],show:v.prt+'  ('+three+')',ex,type:'de',dir:'w',g:'prt'});
-      o.push({p:v.v,pl:'弱変化・混合・強変化のどれ?',type:'choice',ch:t.kindChoices,a:[k],show:three+' — '+t.kinds[k],ex:cl?ex:ex.slice(1),tts:three,dir:'c',g:'kind'});
+      o.push({p:v.v+'('+v.ja+')',pl:'弱変化・混合・強変化のどれ?',type:'choice',ch:t.kindChoices,a:[k],show:three+' — '+t.kinds[k],ex:cl?ex:ex.slice(1),tts:three,dir:'c',g:'kind'});
       if(cl){
-        o.push({p:v.v,pl:'強変化の第何類?',type:'choice',ch:t.clsChoices,a:[cl[0]],show:three+' — 第 '+cl[0]+' 類',ex:[{t:cl[1]}].concat(v.note?[{t:v.note}]:[]),tts:three,dir:'c',g:'cls'});
+        o.push({p:v.v+'('+v.ja+')',pl:'強変化の第何類?',type:'choice',ch:t.clsChoices,a:[cl[0]],show:three+' — 第 '+cl[0]+' 類',ex:[{t:cl[1]}].concat(v.note?[{t:v.note}]:[]),tts:three,dir:'c',g:'cls'});
         if(v.er) o.push({p:v.v+'('+v.ja+')\ner',pl:'現在形を書く(er)',a:[v.er],show:'er '+v.er,ex:[{t:'第 '+cl[0]+' 類: 現在形の母音は '+cl[2]}].concat(v.note?[{t:v.note}]:[]),type:'de',dir:'w',g:'pres'});
       }
       o.push({p:v.v+'('+v.ja+')',pl:'完了の助動詞を選ぶ',type:'choice',ch:t.auxChoices,a:[v.aux],show:stemPerf(t,v)+' — '+t.auxes[v.aux][0],ex:[{t:v.auxNote||t.auxRule}],tts:v.aux==='hs'?v.v:stemPerf(t,v),dir:'c',g:'aux'});
+    }
+    for(const [q,a] of t.rules) o.push({p:q,pl:'規則を思い出す',show:a,type:'ja',dir:'c',g:'rule'});
+    return o;
+  },
+  /* 副文: 並列・従属・副詞を見分ける(type)・意味から従属接続詞を書く(mean)・wenn / als / ob / dass を選ぶ(pick)・
+     間接疑問の疑問詞を書く(wh)・2 文をつなぐ(order)・規則(rule)。語・文・規則は t が持つ */
+  sub(t){
+    const o=[];
+    for(const w of t.words){
+      const ex=[{t:w.ex[0]+'('+w.ex[1]+')',de:1}];if(w.note) ex.push({t:w.note});
+      if(!w.ch) ex.push({t:'教材外(単語帳にまだ無い語)'});
+      o.push({p:w.w+'('+w.ja+')',pl:'並列・従属・副詞のどれ?',type:'choice',ch:t.typeChoices,a:[w.t],show:w.w+' — '+t.types[w.t],ex:[{t:t.typeRule[w.t]}].concat(ex),tts:w.ex[0],dir:'c',g:'type'});
+      if(w.t==='s') o.push({p:w.ja,pl:'従属接続詞を書く',a:[w.w,...(w.alt||[])],show:w.w,ex,type:'de',dir:'w',g:'mean'});
+    }
+    const fill=(s,k)=>s.startsWith('___')?k.charAt(0).toUpperCase()+k.slice(1)+s.slice(3):s.replace('___',k); /* 空欄が文頭なら大文字で始める */
+    for(const [s,ja,k,why] of t.picks){
+      const full=fill(s,k);
+      o.push({p:s+'\n('+ja+')',pl:'空欄に入るのは?',type:'choice',ch:t.pickChoices,a:[k],show:full,ex:[{t:why}],tts:full,dir:'c',g:'pick'});
+    }
+    for(const [s,ja,k,alt,note] of t.wh){
+      const full=fill(s,k);
+      o.push({p:s+'\n('+ja+')',pl:'空欄に疑問詞を書く',a:[k,...alt],show:full,ex:note?[{t:note}]:[],type:'de',dir:'w',g:'wh'});
+    }
+    for(const x of t.orders){
+      const p=x.m+'('+x.mj+')\n'+x.s+'('+x.sj+')',ex=[{t:t.orderRule}].concat(x.note?[{t:x.note}]:[]);
+      o.push({p,pl:x.c+' で 1 文にする(副文を後ろに。全文を書く)',a:[x.back],show:x.back,ex,type:'de',dir:'w',g:'order'});
+      if(x.front) o.push({p,pl:x.c+' で始める(副文を前に。全文を書く)',a:[x.front],show:x.front,ex,type:'de',dir:'w',g:'order'});
     }
     for(const [q,a] of t.rules) o.push({p:q,pl:'規則を思い出す',show:a,type:'ja',dir:'c',g:'rule'});
     return o;
@@ -333,7 +364,7 @@ const GEN={
     for(const [art,n,ja,pl] of NOUNS){
       o.push({p:n+'\n('+ja+')',pl:'定冠詞は? der / die / das',a:[art],show:art+' '+n+' — '+(pl==='(なし)'?'複数形なし':'die '+pl),type:'de',dir:'w'});
       o.push({p:ja,pl:'冠詞つきで書く(例: das Buch)',a:[art+' '+n],show:art+' '+n,type:'de',dir:'w'});
-      if(pl!=='(なし)') o.push({p:'die '+pl,pl:'単数形は?(冠詞つきで)',a:[art+' '+n],show:art+' '+n,type:'de',dir:'r2'});
+      if(pl!=='(なし)') o.push({p:'die '+pl+'('+ja+')',pl:'単数形は?(冠詞つきで)',a:[art+' '+n],show:art+' '+n,tts:'die '+pl,type:'de',dir:'r2'});
     }
     return o;
   },
@@ -361,7 +392,7 @@ const GEN={
       const ex=[{t:ja},{t:exDe+'('+exJa+')',de:1}];
       if(note) ex.push({t:note});
       if(!ch) ex.push({t:'教材外(練習問題3000題 第 5 章の表にない頻出語)'});
-      o.push({p:pr,pl:'格支配は?',type:'choice',ch:t.choices,a:[k],show:pr+' — '+cs[k]+'支配',ex,tts:pr,dir:'c',g:'case'});
+      o.push({p:pr+'('+ja+')',pl:'格支配は?',type:'choice',ch:t.choices,a:[k],show:pr+' — '+cs[k]+'支配',ex,tts:pr,dir:'c',g:'case'});
       o.push({p:ja,pl:'前置詞を書く',a:[pr,...(alt||[])],show:pr+'('+cs[k]+'支配)',ex:ex.slice(1),type:'de',dir:'w',g:'mean'});
     }
     for(const [sent,ja,k,form,why] of PREP_USE){
@@ -385,8 +416,8 @@ const REF={
   art(){
     let h='';
     for(const [name,g] of Object.entries(ART)){
-      const row=(k,jn)=>g[k]?[jn,g[k][0],g[k][1],g[k][2],g[k][3]]:[jn,'—','—','—','—'];
-      h+='<h3>'+name+'</h3>'+tbl(['','1 格','4 格','3 格','2 格'],[row('m','男性'),row('f','女性'),row('n','中性'),row('p','複数')]);
+      const row=(k,jn)=>g[k]?[jn].concat(CASE_SHOW.map(ci=>g[k][ci])):[jn,'—','—','—','—'];
+      h+='<h3>'+name+'</h3>'+tbl(['','1 格','2 格','3 格','4 格'],[row('m','男性'),row('f','女性'),row('n','中性'),row('p','複数')]);
     }
     return h;
   },
@@ -395,7 +426,7 @@ const REF={
     let h='';
     for(const [k,st] of [['d','dies'],['e','mein']]){
       const cell=(g,ci)=>{const e=t.endings[k][g][ci],diff=e!==t.endings[k==='d'?'e':'d'][g][ci];const x=st+(e?'<b>'+e+'</b>':'<b>—</b>');return diff?'<u>'+x+'</u>':x;};
-      h+='<h3>'+t.types[k]+'('+st+(k==='d'?'er':'')+')</h3>'+tbl(['','男性','女性','中性','複数'],[0,1,2,3].map(ci=>[t.cases[ci][0]].concat(['m','f','n','p'].map(g=>cell(g,ci)))));
+      h+='<h3>'+t.types[k]+'('+st+(k==='d'?'er':'')+')</h3>'+tbl(['','男性','女性','中性','複数'],CASE_SHOW.map(ci=>[t.cases[ci][0]].concat(['m','f','n','p'].map(g=>cell(g,ci)))));
     }
     return h+'<p>下線 = 2 つの型で語尾が違う 3 か所(— は語尾なし)</p>';
   },
@@ -412,8 +443,9 @@ const REF={
     const h=['不定詞','過去','過去分詞','完了'].concat(p.er?['er(現在)','類']:[]);
     return tbl(h,vs.map(v=>[esc(v.v)+'<br><small>'+esc(v.ja)+'</small>',esc(v.prt),esc(v.pp),esc(t.auxes[v.aux][0])].concat(p.er?[esc(v.er||''),t.classes[v.c][0]]:[])));
   },
+  subWords(p,t){return tbl(['語','例','意味'],t.words.filter(w=>w.t===p.t).map(w=>[esc(w.w)+(w.ch?'':'<br><small>教材外</small>'),esc(w.ex[0])+'<br><small>'+esc(w.ex[1])+'</small>',esc(w.ja)]));},
   nouns(p){return tbl(['単数','意味','複数'],NOUNS.filter(x=>x[0]===p.art).map(x=>[p.art+' '+x[1],esc(x[2]),esc(x[3])]));},
-  pers(){return tbl(['','1 格','4 格','3 格','所有冠詞'],PERS.map(x=>[esc(x[0]),x[1],x[2],x[3],x[4]]));},
+  pers(){return tbl(['','1 格','3 格','4 格','所有冠詞'],PERS.map(x=>[esc(x[0]),x[1],x[3],x[2],x[4]]));}, /* PERS は [ラベル, 1 格, 4 格, 3 格, 所有冠詞]。2 格は持たない */
   verbs(p){return tbl([''].concat(p.verbs.map(v=>p.headMeaning?v+'('+VJA[v]+')':v)),PRON.map((pr,i)=>[pr].concat(p.verbs.map(v=>VERBS[v][i]))));},
   prep(p){return tbl(['前置詞','例','意味'],PREP.filter(x=>x[1]===p.case).map(x=>[esc(x[0])+(x[6]?'':'<br><small>教材外</small>'),esc(x[3]).replace(/ \/ /g,'<br>'),esc(x[2])]));},
   prepFus(){return tbl(['元の形','融合形','補足'],PREP_FUS.map(x=>[esc(x[0]),esc(x[1]),esc(x[2])]));},
@@ -533,7 +565,7 @@ function ask(){
   });
   const hearBefore=(c.dir==='r'||c.dir==='r2');
   $('#speakBtn').classList.toggle('hidden',!hearBefore);
-  if(hearBefore&&opt.speak) speak(c.p);
+  if(hearBefore&&opt.speak) speak(c.tts||c.p);
   $('#checkBtn').classList.remove('hidden');$('#typeArea').querySelector('.keys').classList.remove('hidden');
   const inp=$('#ans');inp.value='';inp.disabled=false;
   if(typed) setTimeout(()=>inp.focus(),30);
@@ -598,7 +630,7 @@ $('#showBtn').onclick=()=>{
   fb.innerHTML='<div class="ans-show">'+esc(c.show)+'</div>'+exHtml(c);
   $('#flipArea').classList.add('hidden');$('#selfArea').classList.remove('hidden');
   S.phase='self';
-  if(opt.speak&&(c.dir==='r'||c.dir==='r2')) speak(c.p);
+  if(opt.speak&&(c.dir==='r'||c.dir==='r2')) speak(c.tts||c.p);
 };
 const selfMark=ok=>{
   if(S.phase!=='self') return;
@@ -608,7 +640,7 @@ const selfMark=ok=>{
 $('#selfOk').onclick=()=>selfMark(true);
 $('#selfNg').onclick=()=>selfMark(false);
 $('#nextBtn').onclick=next;
-$('#speakBtn').onclick=()=>{const c=S.cards[S.i];const t=(c.dir==='r'||c.dir==='r2')?c.p:speakText(c);if(t)speak(t);};
+$('#speakBtn').onclick=()=>{const c=S.cards[S.i];const t=(c.dir==='r'||c.dir==='r2')?(c.tts||c.p):speakText(c);if(t)speak(t);};
 function next(){
   if(!S||S.phase!=='fb') return;
   $('#checkBtn').classList.remove('hidden');
