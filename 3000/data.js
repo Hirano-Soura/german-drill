@@ -2,6 +2,13 @@ window.DRILL_DATA={
  "CH":{
   "1":{
    "title":"第1章 動詞の人称変化(直説法現在)",
+   "intro":[
+    "<p>動詞は、主語の人称と数に合わせて語尾を変える(人称変化)。辞書の形(不定詞)から -en(-n)を取った部分が語幹で、そこに人称語尾を付ける。人称変化した形を定形と呼ぶ。</p>",
+    {"head":["主語","語尾","spielen(遊ぶ)"],"rows":[["ich(わたし)","-e","spiel<b>e</b>"],["du(きみ)","-st","spiel<b>st</b>"],["er / sie / es(彼・彼女・それ)","-t","spiel<b>t</b>"],["wir(わたしたち)","-en","spiel<b>en</b>"],["ihr(きみたち)","-t","spiel<b>t</b>"],["sie / Sie(彼ら・あなた)","-en","spiel<b>en</b>"]]},
+    "<ul><li><b>口調上の e</b>: 語幹が -t・-d などで終わると、du・er・ihr で語尾の前に e をはさむ(warten → du wart<b>e</b>st, er wart<b>e</b>t)</li><li><b>du が -t だけ</b>: 語幹が -s・-ß・-z で終わると、du の語尾は -t だけ(reisen → du reis<b>t</b>, tanzen → du tanz<b>t</b>)</li><li><b>語順</b>: 平叙文では定形が 2 番目に来る(Heute <b>lerne</b> ich Deutsch.)。疑問詞のない疑問文では文頭に来る(<b>Spielst</b> du Tennis?)</li></ul>",
+    "<p>sein と haben は変化が不規則なので、表ごと覚える。</p>",
+    {"head":["主語","sein(…である)","haben(持っている)"],"rows":[["ich","bin","habe"],["du","bist","hast"],["er / sie / es","ist","hat"],["wir","sind","haben"],["ihr","seid","habt"],["sie / Sie","sind","haben"]]}
+   ],
    "items":[
     {"sec":"基礎","q":"ich trink<span class='blank'>__</span>","sub":"trinken(飲む) / 規則変化","a":["trinke","e"],"hint":"語尾は -e / -st / -t / -en のどれか","expl":"規則変化の語尾は ich -e / du -st / er -t / wir -en / ihr -t / Sie・sie -en。語幹 <b>trink-</b> は変わらない。","grade":"auto"},
     {"sec":"基礎","q":"du trink<span class='blank'>__</span>","sub":"trinken(飲む) / 規則変化","a":["trinkst","st"],"hint":"語尾は -e / -st / -t / -en のどれか","expl":"規則変化の語尾は ich -e / du -st / er -t / wir -en / ihr -t / Sie・sie -en。語幹 <b>trink-</b> は変わらない。","grade":"auto"},
@@ -84,6 +91,11 @@ window.DRILL_DATA={
   },
   "2":{
    "title":"第2章 定冠詞と名詞",
+   "intro":[
+    "<p>名詞には男性(m.)・女性(f.)・中性(n.)の 3 つの性がある。冠詞は、名詞の性と数、文の中での役割(格)で形を変える。名詞は大文字で書き始める。</p>",
+    {"head":["格","m.","f.","n.","pl."],"rows":[["1 格(…が)","der","die","das","die"],["2 格(…の)","des","der","des","der"],["3 格(…に)","dem","der","dem","den"],["4 格(…を)","den","die","das","die"]]},
+    "<ul><li>男性・中性の 2 格は、名詞にも <b>-s / -es</b> を付ける(des Vater<b>s</b>, des Hund<b>es</b>)</li><li>4 格で形が変わるのは男性だけ(der → <b>den</b>)。女性と中性は 1 格と同じ形</li><li>2 格は、修飾する名詞の後ろに置く(das Auto <b>des Vaters</b> = 父の車)</li><li>「…に」は 3 格、「…を」は 4 格になることが多い: Der Vater gibt <b>dem Kind</b> <b>den Ball</b>.(父は子どもにボールを渡す)</li></ul>"
+   ],
    "items":[
     {"sec":"基礎","q":"Hund (m.)","sub":"定冠詞をつけて <b>3格</b> の形にする<br>Hund(犬)","a":["dem Hund"],"hint":"3格は m./n. が dem、f. が der","expl":"3格: der→<b>dem</b> / die→<b>der</b> / das→<b>dem</b>。名詞は変わらない。","grade":"auto"},
     {"sec":"基礎","q":"Hund (m.)","sub":"定冠詞をつけて <b>4格</b> の形にする<br>Hund(犬)","a":["den Hund"],"hint":"4格で形が変わるのは男性だけ","expl":"4格: der→<b>den</b>。f. と n. は1格と同形。","grade":"auto"},
@@ -158,6 +170,11 @@ window.DRILL_DATA={
   },
   "3":{
    "title":"第3章 dieser 型と mein 型",
+   "intro":[
+    "<p>定冠詞とほぼ同じ語尾を付けるのが <b>dieser 型</b>(定冠詞類)、不定冠詞と同じ語尾を付けるのが <b>mein 型</b>(不定冠詞類)。2 つの違いは 3 か所だけ: mein 型は<b>男性 1 格・中性 1 格・中性 4 格</b>で語尾が無い(このドリルでは × と書く)。</p>",
+    {"head":["格","m.","f.","n.","pl."],"rows":[["1 格","dies<b>er</b> / ein×","dies<b>e</b> / ein<b>e</b>","dies<b>es</b> / ein×","dies<b>e</b> / mein<b>e</b>"],["2 格","dies<b>es</b> / ein<b>es</b>","dies<b>er</b> / ein<b>er</b>","dies<b>es</b> / ein<b>es</b>","dies<b>er</b> / mein<b>er</b>"],["3 格","dies<b>em</b> / ein<b>em</b>","dies<b>er</b> / ein<b>er</b>","dies<b>em</b> / ein<b>em</b>","dies<b>en</b> / mein<b>en</b>"],["4 格","dies<b>en</b> / ein<b>en</b>","dies<b>e</b> / ein<b>e</b>","dies<b>es</b> / ein×","dies<b>e</b> / mein<b>e</b>"]]},
+    "<ul><li>dieser 型: dieser(この)・jener(あの)・jeder(どの…も。単数だけ)・welcher(どの)・solcher(そのような)・mancher(いくつもの)・aller(すべての)</li><li>mein 型: 不定冠詞 ein(複数形は無い)・否定冠詞 kein・所有冠詞(mein, dein, sein …)</li><li>dieser 型の中性 1・4 格は dies<b>es</b>(定冠詞 das とは綴りが違う)</li></ul>"
+   ],
    "items":[
     {"sec":"変化表","q":"1格 jed<span class='blank'>__</span> Mann","sub":"(m.)語尾を補う。不要なら × と書く","a":["jeder Mann","jeder"],"hint":"mein 型は男性1格・中性1格・中性4格で語尾が欠ける","expl":"正解は <b>jeder Mann</b>。","grade":"auto"},
     {"sec":"変化表","q":"1格 ein<span class='blank'>__</span> Mann","sub":"(m.)語尾を補う。不要なら × と書く","a":["ein× Mann","einx Mann","ein Mann","ein×","einx","ein"],"hint":"mein 型は男性1格・中性1格・中性4格で語尾が欠ける","expl":"正解は <b>ein× Mann</b>。","grade":"auto"},
@@ -240,6 +257,11 @@ window.DRILL_DATA={
   },
   "4":{
    "title":"第4章 所有冠詞",
+   "intro":[
+    "<p>所有冠詞(わたしの・きみの…)は mein 型の語尾を付ける。<b>どの所有冠詞を使うかは持ち主</b>で、<b>語尾は後ろの名詞の性・数・格</b>で決まる。</p>",
+    {"head":["持ち主","所有冠詞","持ち主","所有冠詞"],"rows":[["ich","mein(わたしの)","wir","unser(わたしたちの)"],["du","dein(きみの)","ihr","euer(きみたちの)"],["er / es","sein(彼の・それの)","sie(彼ら)","ihr(彼らの)"],["sie(彼女)","ihr(彼女の)","Sie(あなた)","Ihr(あなたの)"]]},
+    "<ul><li>語尾が無いのは、ほかの mein 型と同じく男性 1 格・中性 1 格・中性 4 格(mein× Vater, mein× Kind)</li><li>持ち主が男性・中性の名詞なら sein、女性の名詞か複数なら ihr: der Mann → <b>sein</b> Auto, die Frau → <b>ihr</b> Auto</li><li>2 格の名詞は所有冠詞で言い換えられる: das Auto des Vaters → <b>sein</b> Auto</li><li>euer は語尾が付くと e が落ちることが多い(eu<b>re</b> Mutter, eu<b>rem</b> Vater)</li></ul>"
+   ],
    "items":[
     {"sec":"変化表","q":"1格 dein<span class='blank'>__</span> Vater","sub":"(m.)所有冠詞の語尾を補う。不要なら ×","a":["dein× Vater","deinx Vater","dein Vater","dein×","deinx","dein"],"hint":"× は男性1格・中性1格・中性4格だけ","expl":"正解は <b>dein× Vater</b>。","grade":"auto"},
     {"sec":"変化表","q":"2格 dein<span class='blank'>__</span> Vaters","sub":"(m.)所有冠詞の語尾を補う。不要なら ×","a":["deines Vaters","deines"],"hint":"× は男性1格・中性1格・中性4格だけ","expl":"正解は <b>deines Vaters</b>。","grade":"auto"},
@@ -321,6 +343,11 @@ window.DRILL_DATA={
   },
   "5":{
    "title":"第5章 前置詞の格支配",
+   "intro":[
+    "<p>前置詞ごとに、後ろの名詞の格が決まっている(格支配)。空欄の前置詞を答えるときは、すでに書いてある冠詞の形から格を読む。</p>",
+    {"head":["格","前置詞"],"rows":[["2 格","statt(…の代わりに)・trotz(…にもかかわらず)・während(…の間)・wegen(…のために)"],["3 格","aus(…の中から)・bei(…のもとで)・mit(…と・…で)・nach(…の後で・…へ)・seit(…以来)・von(…から・…の)・zu(…へ)・gegenüber(…の向かいに)"],["4 格","bis(…まで)・durch(…を通って)・für(…のために)・gegen(…に反して・…ごろ)・ohne(…なしで)・um(…の周りに・…時に)"],["3・4 格","an(…のきわ)・auf(…の上)・hinter(…の後ろ)・in(…の中)・neben(…の隣)・über(…の上方)・unter(…の下)・vor(…の前)・zwischen(…の間)"]]},
+    "<ul><li>3・4 格支配の 9 つは、<b>場所(wo? どこで)なら 3 格</b>、<b>方向(wohin? どこへ)なら 4 格</b>: Das Buch liegt auf <b>dem</b> Tisch.(机の上にある)/ Er legt das Buch auf <b>den</b> Tisch.(机の上へ置く)</li><li>前置詞と定冠詞の融合形: an dem → <b>am</b>, in dem → <b>im</b>, zu dem → <b>zum</b>, zu der → <b>zur</b>, von dem → <b>vom</b>, bei dem → <b>beim</b>, in das → <b>ins</b>, an das → <b>ans</b></li></ul>"
+   ],
    "items":[
     {"sec":"基礎","q":"<span class='blank'>__</span> des Regens","sub":"雨にもかかわらず<br>前置詞を補う","a":["trotz"],"hint":"すでに書いてある冠詞の格が手がかり","expl":"2格支配","grade":"auto"},
     {"sec":"基礎","q":"<span class='blank'>__</span> meines Vaters","sub":"わたしの父のかわりに<br>前置詞を補う","a":["statt"],"hint":"すでに書いてある冠詞の格が手がかり","expl":"2格支配","grade":"auto"},
@@ -368,6 +395,11 @@ window.DRILL_DATA={
   },
   "6":{
    "title":"第6章 人称代名詞",
+   "intro":[
+    "<p>人称代名詞も格で形を変える。3 格(…に)と 4 格(…を)を取り違えやすい。</p>",
+    {"head":["","1 格","3 格","4 格"],"rows":[["わたし","ich","mir","mich"],["きみ","du","dir","dich"],["彼","er","ihm","ihn"],["彼女","sie","ihr","sie"],["それ","es","ihm","es"],["わたしたち","wir","uns","uns"],["きみたち","ihr","euch","euch"],["彼ら","sie","ihnen","sie"],["あなた(がた)","Sie","Ihnen","Sie"]]},
+    "<ul><li>er・sie・es は人だけでなく、男性・女性・中性の名詞(物)も指す: der Löffel → <b>er</b>, die Uhr → <b>sie</b></li><li>3 格と 4 格の並び: 名詞どうしなら 3 格 → 4 格。代名詞は名詞より前に出る。代名詞どうしなら <b>4 格 → 3 格</b>(Ich gebe <b>es dir</b>.)</li><li>物を指す代名詞は、前置詞と <b>da(r) + 前置詞</b> の結合形にする: mit ihm(それで)→ <b>damit</b>、auf ihm → <b>darauf</b>(母音で始まる前置詞は dar-)。人を指すときは結合形にしない</li><li>man(人は): 不特定の人を主語にする。動詞は er と同じ 3 人称単数の形</li></ul>"
+   ],
    "items":[
     {"sec":"基礎","q":"わたしに","sub":"人称代名詞を挙げなさい","a":["mir"],"hint":"人称と格を順に決める","grade":"auto"},
     {"sec":"基礎","q":"わたしたちを","sub":"人称代名詞を挙げなさい","a":["uns"],"hint":"人称と格を順に決める","grade":"auto"},
@@ -423,6 +455,12 @@ window.DRILL_DATA={
   },
   "7":{
    "title":"第7章 疑問詞",
+   "intro":[
+    "<p>疑問詞は文頭に置き、定形(動詞)が 2 番目に来る。wer(誰)と was(何)は格で形を変える。日本語の「が・の・に・を」が、ほぼ 1・2・3・4 格に当たる。</p>",
+    {"head":["格","wer(誰)","was(何)"],"rows":[["1 格","wer(誰が)","was(何が)"],["2 格","wessen(誰の)","—"],["3 格","wem(誰に)","—"],["4 格","wen(誰を)","was(何を)"]]},
+    {"head":["疑問詞","意味"],"rows":[["wo / wohin / woher","どこで / どこへ / どこから"],["wann","いつ"],["warum","なぜ"],["wie","どのように・どれほど(wie alt = 何歳、wie viel = どれだけ)"],["welcher","どの(dieser 型の語尾を付ける)"],["was für ein","どんな種類の(ein は後ろの名詞の格で語尾が変わる)"]]},
+    "<ul><li>was と前置詞は <b>wo(r) + 前置詞</b> の結合形にする: mit was → <b>womit</b>(何で)、auf was → <b>worauf</b>(何を・何の上に)。人を問うときは結合形にせず、前置詞 + wen / wem(mit wem = 誰と)</li><li>wessen は後ろに名詞を伴うことが多い(<b>Wessen</b> Buch ist das? = これは誰の本ですか)</li></ul>"
+   ],
    "items":[
     {"sec":"基礎","q":"( <span class='blank'>__</span> ) besucht dich heute?","sub":"誰がきみをきょう訪ねてくるのか?<br>疑問詞 wer を正しく補う","a":["Wer"],"hint":"助詞「が / に / の / を」が1/3/2/4格に対応","expl":"「誰が」= 1格","grade":"auto"},
     {"sec":"基礎","q":"( <span class='blank'>__</span> ) schenkt er den Schal?","sub":"誰に彼はそのショールを贈るのですか?<br>疑問詞 wer を正しく補う","a":["Wem"],"hint":"助詞「が / に / の / を」が1/3/2/4格に対応","expl":"「誰に」= 3格","grade":"auto"},
@@ -464,6 +502,11 @@ window.DRILL_DATA={
   },
   "8":{
    "title":"第8章 名詞の複数形",
+   "intro":[
+    "<p>複数形の作り方は 5 つの型に分かれる。辞書は「単数 2 格の語尾 / 複数 1 格の語尾」の形で示す(Apfel <i>m.</i> -s/⸚ → des Apfels / die Äpfel)。複数の定冠詞は、性に関係なく 1 格 die。</p>",
+    {"head":["型","複数の語尾","例"],"rows":[["同尾式","−(変音することもある ⸚)","der Löffel → die Löffel, der Apfel → die <b>Ä</b>pfel"],["E 式","-e(⸚e)","der Zahn → die Z<b>ä</b>hn<b>e</b>"],["ER 式","-er(⸚er)","das Bild → die Bild<b>er</b>"],["(E)N 式","-n / -en","die Lampe → die Lampe<b>n</b>"],["S 式","-s","die Kamera → die Kamera<b>s</b>"]]},
+    "<ul><li>⸚ は、語幹の a・o・u・au が ä・ö・ü・äu に変わること(変音)を表す。ER 式は変音できる母音があれば必ず変音し、(E)N 式と S 式は変音しない</li><li>複数 3 格は名詞にも -n を付ける(den Bilder<b>n</b>)。複数形が -n・-s で終わるものには付けない</li><li>複合名詞は、最後の名詞(基礎語)の性と複数形に従う: der Fußball → die Fußb<b>ä</b>lle</li></ul>"
+   ],
    "items":[
     {"sec":"基礎","q":"Garten (m. -s/⸚)","sub":"単数1格と複数1格を定冠詞つきで(「単数 / 複数」の形で書く)<br>Garten(庭)","a":["der Garten / die Gärten","der Garten, die Gärten"],"hint":"辞書表示の右側が複数1格","expl":"<b>der Garten</b> / <b>die Gärten</b>。複数1格の定冠詞は性に関係なく die。","grade":"auto"},
     {"sec":"基礎","q":"Tisch (m. -es/-e)","sub":"単数1格と複数1格を定冠詞つきで(「単数 / 複数」の形で書く)<br>Tisch(机)","a":["der Tisch / die Tische","der Tisch, die Tische"],"hint":"辞書表示の右側が複数1格","expl":"<b>der Tisch</b> / <b>die Tische</b>。複数1格の定冠詞は性に関係なく die。","grade":"auto"},
@@ -549,6 +592,11 @@ window.DRILL_DATA={
   },
   "21":{
    "title":"第21章 動詞の三要形",
+   "intro":[
+    "<p>不定形・過去基本形・過去分詞の 3 つを<b>三要形</b>と呼ぶ。過去・完了・受動の文は、どれもこの 3 つから作る。このドリルでは「過去基本形 — 過去分詞」の形で答える。</p>",
+    {"head":["型","不定形","過去基本形","過去分詞"],"rows":[["規則変化(弱変化)","lernen","lern<b>te</b>","<b>ge</b>lern<b>t</b>"],["不規則変化(強変化)","singen","s<b>a</b>ng","<b>ge</b>s<b>u</b>ng<b>en</b>"],["混合変化","kennen","k<b>a</b>nn<b>te</b>","<b>ge</b>k<b>a</b>nn<b>t</b>"],["sein / haben","sein / haben","war / hatte","gewesen / gehabt"]]},
+    "<ul><li>規則変化: 過去基本形は 語幹 + -te、過去分詞は ge- + 語幹 + -t。語幹が -t・-d などで終われば e をはさむ(warten → wart<b>e</b>te — gewart<b>e</b>t)</li><li>不規則変化は語幹の母音が変わり、過去分詞は ge- … -en が多い。一つずつ覚える</li><li><b>ge- を付けない</b>: 非分離の前つづり(be-, emp-, ent-, er-, ge-, miss-, ver-, zer-)の動詞(besuchen → besucht)と、-ieren で終わる動詞(studieren → studiert)</li><li><b>分離動詞</b>: 過去基本形は前つづりを後ろに離し(kaufte … ein)、過去分詞は前つづりと語幹の間に ge を入れる(ein<b>ge</b>kauft)</li></ul>"
+   ],
    "items":[
     {"sec":"基礎","q":"antworten「答える」","sub":"三要形を示しなさい(「過去基本形 — 過去分詞」)","a":["antwortete — geantwortet","antwortete - geantwortet","antwortete, geantwortet"],"hint":"分離・非分離と ge- の位置に注意","expl":"<b>antworten — antwortete — geantwortet</b>。規則。語幹が -t なので口調の -e-","grade":"auto"},
     {"sec":"基礎","q":"atmen「呼吸する」","sub":"三要形を示しなさい(「過去基本形 — 過去分詞」)","a":["atmete — geatmet","atmete - geatmet","atmete, geatmet"],"hint":"分離・非分離と ge- の位置に注意","expl":"<b>atmen — atmete — geatmet</b>。規則。-tm なので口調の -e-","grade":"auto"},
@@ -644,6 +692,13 @@ window.DRILL_DATA={
   },
   "22":{
    "title":"第22章 過去と未来",
+   "intro":[
+    "<p>過去形は、過去基本形に過去の人称語尾を付けて作る。<b>ich と er(3 人称単数)には語尾が付かない</b>(過去基本形のまま)。</p>",
+    {"head":["主語","語尾","lernen(lernte)","singen(sang)"],"rows":[["ich","−","lernte","sang"],["du","-st","lernte<b>st</b>","sang<b>st</b>"],["er / sie / es","−","lernte","sang"],["wir","-(e)n","lernte<b>n</b>","sang<b>en</b>"],["ihr","-t","lernte<b>t</b>","sang<b>t</b>"],["sie / Sie","-(e)n","lernte<b>n</b>","sang<b>en</b>"]]},
+    "<p><b>未来形</b>は、werden の現在形 + 不定形(文末)で作る: Ich <b>werde</b> ihn morgen <b>anrufen</b>.(あす彼に電話するつもりだ)。未来のことのほか、推量(…だろう)や、話し手の意志を表す。</p>",
+    {"head":["主語","werden"],"rows":[["ich","werde"],["du","wirst"],["er / sie / es","wird"],["wir","werden"],["ihr","werdet"],["sie / Sie","werden"]]},
+    "<ul><li>話法の助動詞と未来形: werden … 不定形 + 話法の助動詞の不定形(Er wird gut schwimmen <b>können</b>.)</li><li>書き言葉の物語は過去形で書く。話し言葉の過去は現在完了が多い(sein・haben・話法の助動詞は話し言葉でも過去形)</li></ul>"
+   ],
    "items":[
     {"sec":"基礎","q":"du saß<span class='blank'>__</span>","sub":"過去の人称語尾を補いなさい(不要なら ×)<br>saß(座っていた)","a":["saßest"],"hint":"ich と er には語尾がつかない","expl":"語幹が -ß なので口調の e(saßt とも)","grade":"auto"},
     {"sec":"基礎","q":"du spielte<span class='blank'>__</span>","sub":"過去の人称語尾を補いなさい(不要なら ×)<br>spielte(遊んだ)","a":["spieltest"],"hint":"ich と er には語尾がつかない","expl":"弱変化は -te の後に -st","grade":"auto"},
@@ -692,6 +747,11 @@ window.DRILL_DATA={
   },
   "23":{
    "title":"第23章 現在完了",
+   "intro":[
+    "<p>現在完了は、<b>haben か sein の現在形 + 過去分詞</b>で作る。haben / sein が 2 番目、過去分詞が文末に来て、文を枠のようにはさむ: Ich <b>habe</b> gestern Tennis <b>gespielt</b>.</p>",
+    {"head":["助動詞","使う動詞","例"],"rows":[["haben","4 格の目的語をとる動詞・再帰動詞・話法の助動詞と、ほとんどの自動詞","Ich habe ein Fahrrad gekauft."],["sein","場所の移動(gehen, kommen, reisen)・状態の変化(werden, sterben, aufwachen)を表す自動詞と、sein・bleiben","Er ist nach Kyoto gereist."]]},
+    "<ul><li>副文では定形(haben / sein)が文末に行き、過去分詞の後ろに来る: …, weil er nach Kyoto gereist <b>ist</b>.</li><li>話法の助動詞と組むと、過去分詞の代わりに不定形を使う: Ich habe gestern lernen <b>müssen</b>.(müssen の過去分詞 gemusst は使わない)</li><li>不定形が 2 つ並ぶ文が副文になると、haben は文末ではなく、その 2 つの前に出る: …, weil ich gestern <b>habe</b> lernen müssen.</li></ul>"
+   ],
    "items":[
     {"sec":"基礎","q":"das Buch schon lesen(主語 ich)","sub":"現在完了の文を作りなさい(その本をすでに読む)","a":["Ich habe das Buch schon gelesen"],"hint":"haben か sein か、まず決める","expl":"他動詞なので haben","grade":"auto"},
     {"sec":"基礎","q":"mit ihm ins Kino gehen(主語 ich)","sub":"現在完了の文を作りなさい(彼と映画を見に行く)","a":["Ich bin mit ihm ins Kino gegangen"],"hint":"haben か sein か、まず決める","expl":"場所の移動なので sein","grade":"auto"},
@@ -741,6 +801,11 @@ window.DRILL_DATA={
   },
   "24":{
    "title":"第24章 過去完了と未来完了",
+   "intro":[
+    "<p>完了の形は、haben / sein の時制を変えるだけで作れる。<b>過去完了</b>は過去のある時点より前に済んだこと、<b>未来完了</b>は未来のある時点までに済んでいること(または、済んだだろうという推量)を表す。haben と sein の使い分けは現在完了と同じ。</p>",
+    {"head":["時制","形","例"],"rows":[["現在完了","haben / sein の現在形 … 過去分詞","Er hat die Arbeit beendet."],["過去完了","haben / sein の過去形 … 過去分詞","Er hatte die Arbeit schon beendet.(もう終えていた)"],["未来完了","werden … 過去分詞 + haben / sein","Bis Montag wird er die Arbeit beendet haben.(月曜までに終えているだろう)"]]},
+    "<ul><li><b>再帰代名詞</b>(主語と同じものを指す代名詞): 1・2 人称は人称代名詞と同じ形(mich / mir, dich / dir, uns, euch)、3 人称と敬称は 3 格も 4 格も <b>sich</b>(Er wäscht sich.)</li><li><b>形容詞の名詞化</b>: 形容詞を大文字で書き、形容詞と同じ語尾を付けて人や物を表す。冠詞で語尾が変わる(der Deutsch<b>e</b> / ein Deutsch<b>er</b> = ドイツ人)</li></ul>"
+   ],
    "items":[
     {"sec":"基礎","q":"in den Zug einsteigen(主語 ich)","sub":"過去完了の文を作りなさい(列車に乗り込む)","a":["Ich war in den Zug eingestiegen"],"hint":"完了不定形の haben / sein を過去形にする","expl":"移動なので sein","grade":"auto"},
     {"sec":"基礎","q":"seine Heimatstadt verlassen(主語 er)","sub":"過去完了の文を作りなさい(彼の故郷の町を去る)","a":["Er hatte seine Heimatstadt verlassen"],"hint":"完了不定形の haben / sein を過去形にする","expl":"他動詞なので haben。非分離で ge- なし","grade":"auto"},

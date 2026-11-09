@@ -94,6 +94,12 @@
     padding:5px 8px;font-size:12px;font-family:inherit;max-width:100%;
   }
   .spk{margin-left:8px;vertical-align:middle}
+  .ref h3{font-size:14px;color:var(--ac2);margin:18px 0 6px;font-weight:600}
+  .ref p{margin:6px 0}
+  .ref ul{margin:6px 0;padding-left:20px} .ref li{margin:3px 0}
+  .ref b{color:var(--ac2);font-weight:600}
+  .ref .tw{overflow-x:auto}
+  .ref td:first-child{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -132,6 +138,17 @@
     和訳・長文は自動採点できないので、模範解答を出して自分で ○ / × を付ける方式にしてある。
     成績はこのブラウザにだけ残る(外へは出ない)。
   </p>
+</div>
+
+<!-- ============ 要点(問題の前のクッション) ============ -->
+<div id="intro" class="card hidden">
+  <h2>要点</h2>
+  <div class="acts" style="margin:0 0 6px">
+    <button class="btn primary" id="introStart"></button>
+    <button class="btn" id="introBack">範囲を選び直す</button>
+  </div>
+  <p class="note" style="margin:0 0 4px">選んだ章の基本を確かめてから解く。</p>
+  <div class="ref" id="introBody"></div>
 </div>
 
 <!-- ============ 出題 ============ -->
@@ -173,7 +190,7 @@
 
 </div>
 
-<script src="data.js?v=e2ee9fe58e"></script>
+<script src="data.js?v=b8a6becd7e"></script>
 <script>
 "use strict";
 
@@ -364,7 +381,7 @@ function start(list){
     }
   }
   idx=0; nOk=0; nAll=0; streak=0; wrongIds=[];
-  $("setup").classList.add("hidden"); $("done").classList.add("hidden"); $("quiz").classList.remove("hidden");
+  $("setup").classList.add("hidden"); $("intro").classList.add("hidden"); $("done").classList.add("hidden"); $("quiz").classList.remove("hidden");
   $("keys").innerHTML = ["ä","ö","ü","ß","Ä","Ö","Ü"].map(function(c){ return '<button data-c="'+c+'">'+c+'</button>'; }).join("");
   show();
 }
@@ -556,7 +573,36 @@ $("reset").addEventListener("click", function(){
   store.rec = {}; save(); updateCount();
   alert("消しました。");
 });
-$("start").addEventListener("click", function(){ start(selected()); });
+/* ============================================================
+   要点(問題の前のクッション)
+     「はじめる」で、選んだ範囲に入る章の要点(データの intro)を出してから解く。
+     intro の部品: 文字列 = そのまま html / {head, rows} = 表(基礎暗記の parts と同じ書き方)
+     まちがえた問題だけのやり直しは、要点を通さずにすぐ始める
+   ============================================================ */
+function introHtml(ch){
+  var parts = (CH[ch] && CH[ch].intro) || [];
+  return "<h3>"+esc(chName(ch))+"</h3>" + parts.map(function(p){
+    if(typeof p === "string") return p;
+    return '<div class="tw"><table><tr>'+p.head.map(function(h){ return "<th>"+h+"</th>"; }).join("")+"</tr>"+
+      p.rows.map(function(r){ return "<tr>"+r.map(function(c){ return "<td>"+c+"</td>"; }).join("")+"</tr>"; }).join("")+"</table></div>";
+  }).join("");
+}
+var introList = [];
+function openIntro(){
+  introList = selected();
+  if(!introList.length) return;
+  var chs = []; introList.forEach(function(it){ if(chs.indexOf(it.ch) < 0) chs.push(it.ch); });
+  chs.sort(function(a,b){ return a-b; });
+  $("introBody").innerHTML = chs.map(introHtml).join("");
+  $("introStart").textContent = "この範囲ではじめる(" + introList.length + " 問)";
+  $("setup").classList.add("hidden"); $("intro").classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+$("introStart").addEventListener("click", function(){ start(introList); });
+$("introBack").addEventListener("click", function(){
+  $("intro").classList.add("hidden"); $("setup").classList.remove("hidden"); renderSetup();
+});
+$("start").addEventListener("click", openIntro);
 
 renderSetup();
 $("autoSpeak").classList.toggle("on", !!store.auto);
