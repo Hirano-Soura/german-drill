@@ -158,7 +158,7 @@
 
 </div>
 
-<script src="data.js?v=fddfb94963"></script>
+<script src="data.js?v=61d1fc2166"></script>
 <script>
 'use strict';
 /* ================= 共通 ================= */
@@ -313,6 +313,33 @@ const GEN={
     }
     return o;
   },
+  /* 形容詞の語尾: 語尾をつける(end)・日本語から句を作る(ja)・何変化か(type)。冠詞・形容詞・名詞・語尾は t が持つ。強変化の単数は物質名詞(massNouns)で出す */
+  adj(t){
+    const o=[],cl=t.cases,gn=Object.fromEntries(t.genders.map(x=>[x[0],x]));
+    const one=a=>a[rnd(0,a.length-1)];
+    const pickNA=(d,g)=>d.k==='s'&&g!=='p'?[one(t.massNouns.filter(x=>x.g===g)),one(t.massAdjs)]:[one(t.nouns.filter(x=>g==='p'||x.g===g)),one(t.adjs)];
+    const card=(d,g,ci)=>{
+      const [nn,ad]=pickNA(d,g),e=t.endings[d.k][g][ci],af=ad.a+e,nf=artwNoun(nn,g,ci),pre=d.f?d.f[g][ci]+' ':'';
+      const ex=[{t:cl[ci][0]+' ・ '+gn[g][1]+' ・ '+t.types[d.k]+'(-'+e+')'},{t:t.rules[d.k]}];if(d.note) ex.push({t:d.note});
+      return {nn,ad,af,nf,pre,ex};
+    };
+    for(const d of t.dets){
+      const gs=d.num==='sg'?['m','f','n']:['m','f','n','p'];
+      for(const g of gs) for(let ci=0;ci<4;ci++){
+        const {nn,ad,af,nf,pre,ex}=card(d,g,ci);
+        o.push({p:pre+ad.a+'__('+ad.ja+') '+nf[0]+'('+nn.ja+') ('+gn[g][2]+')\n'+cl[ci][0],pl:'形容詞に語尾をつけて書く',a:[af,...nf.map(y=>pre+af+' '+y)],show:pre+af+' '+nf[0],ex,type:'de',dir:'w',g:'end'});
+      }
+      const combos=shuffle(gs.flatMap(g=>[0,1,2,3].map(ci=>[g,ci]))).slice(0,t.jaPerDet);
+      for(const [g,ci] of combos){
+        const {nn,ad,af,nf,pre,ex}=card(d,g,ci),lb=g==='p'?d.jp:d.ja;
+        ex[0]={t:cl[ci][1]+' = '+ex[0].t};
+        o.push({p:lb+(/[+)]$/.test(lb)?' ':'')+ad.ja+nn.ja+(g==='p'?'(複数)':'')+cl[ci][1],pl:'冠詞 + 形容詞 + 名詞で書く(格に合わせる)',a:nf.map(y=>pre+af+' '+y),show:pre+af+' '+nf[0],ex,type:'de',dir:'w',g:'ja'});
+      }
+      const m1=(d.f?d.f.m[0]+' ':'')+'gut'+t.endings[d.k].m[0]+' '+(d.k==='s'?'Wein':'Hund');
+      o.push({p:(d.w||'(冠詞なし)')+' + 形容詞 + 名詞',pl:'形容詞は何変化?',type:'choice',ch:t.choices,a:[d.k],show:t.types[d.k]+' — '+m1,ex:[{t:t.rules[d.k]}],tts:d.w||m1,dir:'c',g:'type'});
+    }
+    return o;
+  },
   /* 3 基本形: 過去分詞(pp)・過去形(prt)を書く、型(kind)・類(cls)を選ぶ、現在形 er(pres)、完了の助動詞(aux)、規則(rule)。動詞・類・規則は t が持つ */
   stem(t){
     const o=[];
@@ -429,6 +456,23 @@ const REF={
       h+='<h3>'+t.types[k]+'('+st+(k==='d'?'er':'')+')</h3>'+tbl(['','男性','女性','中性','複数'],CASE_SHOW.map(ci=>[t.cases[ci][0]].concat(['m','f','n','p'].map(g=>cell(g,ci)))));
     }
     return h+'<p>下線 = 2 つの型で語尾が違う 3 か所(— は語尾なし)</p>';
+  },
+  /* 形容詞: 冠詞つきの表。p.k = w 弱 / g 混合 / s 強。混合は弱変化と語尾が違うところに下線 */
+  adjFull(p,t){
+    const s=t.tables[p.k],gs=['m','f','n','p'];
+    const cell=(g,ci)=>{
+      const e=t.endings[p.k][g][ci],d=s.det?t.dets.find(x=>x.w===s.det[g]).f[g][ci]+' ':'';
+      const x=esc(d+s.adj)+'<b>'+e+'</b> '+esc(s.nouns[g][ci]);
+      return p.k==='g'&&e!==t.endings.w[g][ci]?'<u>'+x+'</u>':x;
+    };
+    return tbl(['','男性','女性','中性',s.pHead||'複数'],CASE_SHOW.map(ci=>[t.cases[ci][0]].concat(gs.map(g=>cell(g,ci)))));
+  },
+  /* 形容詞: 語尾だけの表。弱変化と混合変化は 1 つの表に「弱 / 混合」で並べ、強変化は別の表 */
+  adjEnd(p,t){
+    const gs=['m','f','n','p'],hd=['','男性','女性','中性','複数'];
+    const wg=(g,ci)=>{const w=t.endings.w[g][ci],m=t.endings.g[g][ci];return w===m?'-'+w:'-'+w+' / <u><b>-'+m+'</b></u>';};
+    return '<p>弱変化 / 混合変化(斜線の右・下線が混合変化だけの語尾。斜線がなければ同じ)</p>'+tbl(hd,CASE_SHOW.map(ci=>[t.cases[ci][0]].concat(gs.map(g=>wg(g,ci)))))
+      +'<p>強変化(冠詞なし)</p>'+tbl(hd,CASE_SHOW.map(ci=>[t.cases[ci][0]].concat(gs.map(g=>'-'+t.endings.s[g][ci]))));
   },
   stemCls(p,t){
     const rows=[];
